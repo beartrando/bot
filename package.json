@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "nodemon --watch src --watch ../../shared/ --exec ts-node -r tsconfig-paths/register src/app.ts",
     "stage": "ts-node-dev --respawn --transpile-only src/app.ts",
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "start": "node dist/app.js",
     "test": "jest"
   },
@@ -36,7 +36,7 @@
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "jsonwebtoken": "^9.0.3",
-    "@shared/kafka": "workspace:*",
+    "@shared/kafka-manager": "workspace:*",
     "kafkajs": "^2.2.4",
     "ws": "^8.21.0",
     "pg-boss": "^12.15.0"
