@@ -1,10 +1,10 @@
 import * as streamingGrpc from "../grpc/generated/streaming";
 import * as battleGrpc from "../grpc/generated/battle";
 import battleClient from "../clients/battle.client";
-import {boss} from "@shared/pg-boss";
+import {boss} from "@shared/pg-boss-helper";
 import logger from "@shared/logger";
 import {pgBossConsumersConfig} from "../config/pg.boss.config";
-import {enqueueEvent} from "@shared/pg-boss/src/enqueueEvent";
+import {enqueueEvent} from "@shared/pg-boss-helper/src/enqueueEvent";
 
 
 export const startBattle = async (req: streamingGrpc.StartBattleRequest) => {

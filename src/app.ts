@@ -2,10 +2,10 @@ import grpcServer from './grpc/server';
 import * as grpc from '@grpc/grpc-js';
 import logger from '@shared/logger';
 import config from "./config/config";
-import {createConsumer} from "@shared/kafka";
+import {createConsumer} from "@shared/kafka-manager";
 import kafkaConfig, {kafkaConsumersConfig} from "./config/kafka.config";
 import battleClient from "./clients/battle.client";
-import {initBoss, startWorker} from "@shared/pg-boss";
+import {initBoss, startWorker} from "@shared/pg-boss-helper";
 import pgBossConfig, {pgBossConsumersConfig} from "./config/pg.boss.config";
 
 
