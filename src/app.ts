@@ -5,7 +5,7 @@ import config from "./config/config";
 import {createConsumer} from "@shared/kafka-manager";
 import kafkaConfig, {kafkaConsumersConfig} from "./config/kafka.config";
 import battleClient from "./clients/battle.client";
-import {initBoss, startWorker} from "@shared/pg-boss-helper";
+import {initBoss, startWorker} from "@shared/pg-boss-manager";
 import pgBossConfig, {pgBossConsumersConfig} from "./config/pg.boss.config";
 
 
