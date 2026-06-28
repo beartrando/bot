@@ -5,7 +5,7 @@ import config from "./config/config";
 import {createConsumer} from "@shared/kafka-manager";
 import kafkaConfig, {kafkaConsumersConfig} from "./config/kafka.config";
 import battleClient from "./clients/battle.client";
-import {initBoss, startWorker} from "@shared/pg-boss-manager";
+import pgBossManager from "@shared/pg-boss-manager";
 import pgBossConfig, {pgBossConsumersConfig} from "./config/pg.boss.config";
 
 
@@ -48,9 +48,9 @@ async function createWebSocketStream() {
 }
 
 async function startPgBoss() {
-  await initBoss(pgBossConfig, async () => {
+  await pgBossManager.initBoss(pgBossConfig, async () => {
     for (const topicConfig of Object.values(pgBossConsumersConfig)) {
-      await startWorker(topicConfig.topic, topicConfig.handler);
+      await pgBossManager.startWorker(topicConfig.topic, topicConfig.handler);
     }
   });
 }
