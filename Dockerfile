@@ -9,6 +9,7 @@ COPY turbo.json ./
 COPY package.json ./
 COPY pnpm-workspace.yaml ./
 COPY tsconfig.json ./
+COPY proto ./proto
 
 COPY services/ai/package*.json ./services/ai/
 COPY services/ai/jest.config.js ./services/ai/
@@ -22,12 +23,13 @@ FROM base AS build
 
 ENV NODE_ENV=development
 
-RUN corepack enable \
- && pnpm install --frozen-lockfile \
- && pnpm run proto:generate \
- && pnpm run --filter ai build \
- && pnpm prune --prod
+RUN apt-get update && apt-get install -y protobuf-compiler
 
+RUN corepack enable
+RUN pnpm install --frozen-lockfile
+RUN pnpm run --filter ai proto:generate
+RUN pnpm run --filter ai build
+RUN pnpm install --prod
 
 # ---------- DEV ----------
 FROM build AS dev
@@ -41,7 +43,7 @@ EXPOSE 50051
 CMD ["pnpm", "--filter", "ai", "start"]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:9090/livez || exit 1
+  CMD nc -z localhost 50051 || exit 1
 
 # ---------- PROD ----------
 FROM node:22 AS prod
@@ -50,15 +52,21 @@ WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
 
-#COPY --from=build /usr/src/app /usr/src/app
+#RUN pnpm deploy --filter ai /out
+
+##COPY --from=build /usr/src/app /usr/src/app
+
 COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/services/ai/node_modules ./services/ai/node_modules
+COPY --from=build /usr/src/app/services/ai/dist ./services/ai/dist
+COPY --from=build /usr/src/app/shared ./shared
+
 
 USER node
 
 EXPOSE 50051
 
-CMD ["node", "dist/services/ai/src/app.js"]
+CMD ["node", "./services/ai/dist/app.js"]
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:9090/livez || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
+  CMD nc -z localhost 50051 || exit 1
