@@ -6,7 +6,6 @@ import {pgBossConsumersConfig} from "../config/pg.boss.config";
 import pgBossManager from "@shared/pg-boss-manager";
 
 
-
 export const startBattle = async (req: streamingGrpc.StartBattleRequest) => {
   const message = streamingGrpc.BattleStreamRequest.create({start: req});
   logger.log('startBattle');
@@ -26,7 +25,12 @@ export const makeMove = async (battle: battleGrpc.BattleObject) => {
   }
 
   const battleId = battle.id;
-  const req = streamingGrpc.BattleStreamRequest.create({move: streamingGrpc.BattleMoveRequest.create({battleId, cellIdx})});
+  const req = streamingGrpc.BattleStreamRequest.create({
+    move: streamingGrpc.BattleMoveRequest.create({
+      battleId,
+      cellIdx
+    })
+  });
   await pgBossManager.enqueueEvent(pgBossConsumersConfig.websocketSendEvent.topic, req);
   logger.log('message moved to pgboss')
 }
@@ -58,9 +62,9 @@ export const calculateMove = async (battle: battleGrpc.BattleObject): Promise<nu
     : battleGrpc.BattleCellValue.CELL_X;
 
   const winningCombos = [
-    [0,1,2],[3,4,5],[6,7,8], // строки
-    [0,3,6],[1,4,7],[2,5,8], // столбцы
-    [0,4,8],[2,4,6]          // диагонали
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // строки
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // столбцы
+    [0, 4, 8], [2, 4, 6]          // диагонали
   ];
 
   const isWinningMove = (cells: battleGrpc.BattleCellValue[], symbol: battleGrpc.BattleCellValue, idx: number) => {
@@ -89,7 +93,7 @@ export const calculateMove = async (battle: battleGrpc.BattleObject): Promise<nu
   if (battle.cells[4] === battleGrpc.BattleCellValue.CELL_EMPTY) return 4;
 
   // 4. Углы
-  const corners = [0,2,6,8];
+  const corners = [0, 2, 6, 8];
   for (const c of corners) {
     if (battle.cells[c] === battleGrpc.BattleCellValue.CELL_EMPTY) return c;
   }

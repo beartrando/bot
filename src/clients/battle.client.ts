@@ -116,6 +116,16 @@ class BattleClient {
     }
   };
 
+  cancelReconnect(reconnectAttempts = 0) {
+    logger.info("⏹️ Reconnect cancelled");
+
+    this.reconnectAttempts = reconnectAttempts;
+    if (this.reconnectFn) {
+      clearTimeout(this.reconnectFn);
+    }
+    this.reconnectFn = null;
+  }
+
   private messageHandler = (data: WebSocket.RawData) => {
     try {
       const buffer = new Uint8Array(data as ArrayBuffer);
@@ -130,16 +140,6 @@ class BattleClient {
   private errorHandler = (err: unknown) => {
     logger.error("⚠️ WebSocket error:", err);
     this.scheduleReconnect();
-  }
-
-  cancelReconnect(reconnectAttempts = 0) {
-    logger.info("⏹️ Reconnect cancelled");
-
-    this.reconnectAttempts = reconnectAttempts;
-    if (this.reconnectFn) {
-      clearTimeout(this.reconnectFn);
-    }
-    this.reconnectFn = null;
   }
 
   private openHandler = () => {
