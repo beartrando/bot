@@ -12,6 +12,7 @@ COPY tsconfig.json ./
 COPY proto ./proto
 
 COPY services/ai/package*.json ./services/ai/
+COPY services/ai/prisma ./services/ai/prisma
 COPY services/ai/jest.config.js ./services/ai/
 COPY services/ai/tsconfig.json ./services/ai/
 COPY services/ai/prisma ./services/ai/prisma/
