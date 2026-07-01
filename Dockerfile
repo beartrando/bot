@@ -80,7 +80,6 @@ WORKDIR /usr/src/app
 
 ENV NODE_ENV=production
 
-COPY --from=build /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/services/ai/node_modules ./services/ai/node_modules
 COPY --from=build /usr/src/app/services/ai/dist ./services/ai/dist
 COPY --from=build /usr/src/app/shared ./shared
