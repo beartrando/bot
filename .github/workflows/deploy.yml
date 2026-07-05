@@ -25,7 +25,7 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
 
-          git fetch --tags
+          git fetch origin 'refs/tags/*:refs/tags/*'
 
           TAG=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
 
@@ -78,8 +78,7 @@ jobs:
 
       - name: Create and push release tag
         run: |
-          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${GITHUB_REPOSITORY}.git
-          git remote set-url origin https://x-access-token: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@github.com/${GITHUB_REPOSITORY}.git
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/${{ github.repository }}.git
 
           git tag -a "v$VERSION" -m "Release v$VERSION"
 
@@ -95,9 +94,10 @@ jobs:
 
       - name: Trigger monorepo build
         run: |
+          SERVICE_NAME=$(echo "${{ github.event.repository.name }}" | sed 's/^tic-tac-toe-//')
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             https://api.github.com/repos/beartrando/tic-tac-toe-infra/dispatches \
-            -d "{\"event_type\":\"service-updated\",\"client_payload\":{\"service\":\"${{ github.event.repository.name }}\",\"repo\":\"${GITHUB_REPOSITORY}\",\"branch\":\"${GITHUB_REF_NAME}\",\"version\":\"${{ needs.determine-version.outputs.version }}\",\"sha\":\"${{ github.sha }}\"}}"
-#
+            -d "{\"event_type\":\"service-updated\",\"client_payload\":{\"service\":\"$SERVICE_NAME\",\"repo\":\"${GITHUB_REPOSITORY}\",\"branch\":\"${GITHUB_REF_NAME}\",\"version\":\"${{ needs.determine-version.outputs.version }}\",\"sha\":\"${{ github.sha }}\"}}"
+          
