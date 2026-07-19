@@ -1,6 +1,6 @@
 const startedAt = Date.now();
 
-export const health = async () => {
+export const check = async () => {
   return {
     healthy: true,
     components: {},
