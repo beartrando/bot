@@ -10,70 +10,70 @@ import pgBossConfig, {pgBossConsumersConfig} from "./config/pg.boss.config";
 
 
 async function startGrpc() {
-  return new Promise<void>((resolve, reject) => {
-    grpcServer.bindAsync(
-      `0.0.0.0:${config.grpcPort}`,
-      grpc.ServerCredentials.createInsecure(),
-      (err, port) => {
-        if (err) {
-          logger.error('❌ Failed to start gRPC:', err);
-          reject(err);
-          return;
-        }
-        logger.info(`🟢 gRPC server started on port ${port}`);
-        resolve();
-      }
-    );
+    return new Promise<void>((resolve, reject) => {
+        grpcServer.bindAsync(
+            `0.0.0.0:${config.grpcPort}`,
+            grpc.ServerCredentials.createInsecure(),
+            (err, port) => {
+                if (err) {
+                    logger.error('❌ Failed to start gRPC:', err);
+                    reject(err);
+                    return;
+                }
+                logger.info(`🟢 gRPC server started on port ${port}`);
+                resolve();
+            }
+        );
 
-    process.on('SIGINT', () => {
-      logger.info('🛑 Stopping gRPC server...');
-      grpcServer.forceShutdown();
-      process.exit(0);
+        process.on('SIGINT', () => {
+            logger.info('🛑 Stopping gRPC server...');
+            grpcServer.forceShutdown();
+            process.exit(0);
+        });
     });
-  });
 }
 
 async function createKafkaConsumers() {
-  const configs = Object.values(kafkaConsumersConfig);
+    const configs = Object.values(kafkaConsumersConfig);
 
-  await Promise.all(
-    configs.map(async ({topic, handler}) => {
-      await createConsumer(kafkaConfig, {topic, handler});
-    })
-  );
+    await Promise.all(
+        configs.map(async ({topic, handler}) => {
+            await createConsumer(kafkaConfig, {topic, handler});
+        })
+    );
 }
 
 async function createWebSocketStream() {
-  return await battleClient.getWs();
+    return await battleClient.getWs();
 }
 
 async function startPgBoss() {
-  await pgBossManager.initBoss(pgBossConfig, async () => {
-    for (const topicConfig of Object.values(pgBossConsumersConfig)) {
-      await pgBossManager.startWorker(topicConfig.topic, topicConfig.handler);
-    }
-  });
+    await pgBossManager.initBoss(pgBossConfig, async () => {
+        for (const topicConfig of Object.values(pgBossConsumersConfig)) {
+            await pgBossManager.startWorker(topicConfig.topic, topicConfig.handler);
+        }
+    });
 }
 
 async function bootstrap() {
-  try {
-    await Promise.all([
-      startGrpc(),
-      startPgBoss(),
-      createKafkaConsumers(),
-      createWebSocketStream(),
-    ]);
-    logger.info('🚀 Ai successfully started ');
-  } catch (err) {
-    logger.error('💥 Failed to start Ai:', err);
-    process.exit(1);
-  }
+    try {
+        await Promise.all([
+            startGrpc(),
+            startPgBoss(),
+            createKafkaConsumers(),
+            createWebSocketStream(),
+        ]);
+        logger.info('🚀 Ai successfully started ');
+    } catch (err) {
+        logger.error('💥 Failed to start Ai:', err);
+        process.exit(1);
+    }
 
-  process.on('SIGINT', () => {
-    logger.info('🛑 Shutting down...');
-    grpcServer.forceShutdown();
-    process.exit(0);
-  });
+    process.on('SIGINT', () => {
+        logger.info('🛑 Shutting down...');
+        grpcServer.forceShutdown();
+        process.exit(0);
+    });
 }
 
 bootstrap();

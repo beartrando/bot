@@ -3,16 +3,16 @@ import logger from "@shared/logger";
 import {makeMove, startBattle} from "../handlers/battle.handler";
 
 export const connectToBattle = async (req: streamingGrpc.StartBattleRequest) => {
-  startBattle(req);
+    startBattle(req);
 };
 
 export const battleMessageHandler = (message: streamingGrpc.BattleStreamResponse) => {
-  if (message.battle) {
+    if (message.battle) {
 
-    makeMove(message.battle);
-  }
+        makeMove(message.battle);
+    }
 
-  if (message.error) {
-    logger.error(message.error);
-  }
+    if (message.error) {
+        logger.error(message.error);
+    }
 };
