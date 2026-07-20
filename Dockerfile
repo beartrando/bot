@@ -40,6 +40,8 @@ RUN pnpm --filter ai prisma:generate
 # ---------- DEV ----------
 FROM deps AS dev
 
+COPY services/ai/tsconfig.test.json ./services/ai/
+
 ENV NODE_ENV=development
 
 RUN chown -R node:node /usr/src/app

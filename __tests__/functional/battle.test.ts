@@ -3,7 +3,7 @@ import * as streamingGrpc from "../../src/grpc/generated/streaming";
 import config from "../../src/config/config";
 import jwt from "jsonwebtoken";
 import WebSocket from "ws";
-import * as gatewayClient from "../../src/http/clients/gateway.client.ts";
+import * as gatewayClient from "../../src/clients/gateway.client";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
