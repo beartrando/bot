@@ -35,6 +35,8 @@ RUN pnpm install --offline --frozen-lockfile
 RUN mkdir -p ./services/ai/src/grpc/generated
 RUN pnpm --filter ai proto:generate
 
+RUN pnpm --filter ai prisma:generate
+
 # ---------- DEV ----------
 FROM deps AS dev
 
@@ -61,7 +63,6 @@ RUN pnpm --filter @shared/grpc-client-manager build
 RUN pnpm --filter @shared/kafka-manager build
 RUN pnpm --filter @shared/pg-boss-manager build
 
-RUN pnpm --filter ai prisma:generate
 RUN pnpm --filter ai build
 
 RUN pnpm --filter ai deploy /deploy --prod
