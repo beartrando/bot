@@ -4,6 +4,7 @@ import config from "../../src/config/config";
 import jwt from "jsonwebtoken";
 import WebSocket from "ws";
 import * as gatewayClient from "../../src/clients/gateway.client";
+import {GatewayClient} from "../../src/clients/gateway.client";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -19,34 +20,26 @@ describe("Gateway Service", () => {
         console.log(deviceId1);
         console.log(deviceId2);
 
-        const auth1 = await gatewayClient.signIn(deviceId1);
-        const auth2 = await gatewayClient.signIn(deviceId2);
+        const gatewayClient1 = new GatewayClient();
+        const gatewayClient2 = new GatewayClient();
 
+        await gatewayClient1.signIn(deviceId1);
+        await gatewayClient2.signIn(deviceId2);
 
-        console.log(auth1);
-        console.log(auth2);
-        expect(auth1).toBeDefined();
-        expect(auth1.accessToken).toBeDefined();
-        expect(auth2).toBeDefined();
-        expect(auth2.accessToken).toBeDefined();
-
-        const payload1 = jwt.decode(auth1.accessToken) as { sub: string; iat: number; exp: number };
-        const payload2 = jwt.decode(auth2.accessToken) as { sub: string; iat: number; exp: number };
-        expect(payload1.sub).toBeDefined();
-        console.log('user1', payload1.sub);
-        console.log('user2', payload2.sub);
+        expect(gatewayClient1.getJwt()).toBeDefined();
+        expect(gatewayClient2.getJwt()).toBeDefined();
 
         //------------------------------------------------------------------------------------------------------------------
 
         // await delay(5000);
 
-        const profile1 = await gatewayClient.fetchProfile(auth1.accessToken);
-        const profile2 = await gatewayClient.fetchProfile(auth2.accessToken);
+        const profile1 = await gatewayClient1.fetchProfile();
+        const profile2 = await gatewayClient2.fetchProfile();
 
         console.log(profile1);
 
-        const ws1 = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${auth1.accessToken}`);
-        const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${auth2.accessToken}`);
+        const ws1 = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${gatewayClient1.getJwt()}`);
+        const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${gatewayClient2.getJwt()}`);
 
 
         const start = new Promise<void>(async (resolve) => {

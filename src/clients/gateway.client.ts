@@ -4,7 +4,7 @@ import * as grpcAuth from "../grpc/generated/auth";
 import * as grpcProfile from "../grpc/generated/profile";
 import logger from "@shared/logger";
 
-class GatewayClient {
+export class GatewayClient {
     private host = config.httpGatewayHost;
     private port = Number(config.httpGatewayPort);
     private jwt = '';
