@@ -44,8 +44,6 @@ async function startGrpc(): Promise<void> {
 async function registerPgBossWorkers(): Promise<void> {
     const configs = Object.values(pgBossConsumersConfig);
     for (const { topic, handler } of configs) {
-        logger.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        logger.info(topic)
         pgBossManager.workers.registerWorker(
             topic,
             handler,

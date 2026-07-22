@@ -18,6 +18,8 @@ export async function connectingRequest(topic: string, partition: number, messag
 
 
 export async function sendToStream(jobs: Job[]): Promise<void> {
+    logger.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1sendToStream');
+
     for (const job of jobs) {
         logger.log('sendToStream');
         console.log(job);
