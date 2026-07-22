@@ -48,11 +48,16 @@ async function createWebSocketStream() {
 }
 
 async function startPgBoss() {
-    await pgBossManager.initBoss(pgBossConfig, async () => {
-        for (const topicConfig of Object.values(pgBossConsumersConfig)) {
-            await pgBossManager.startWorker(topicConfig.topic, topicConfig.handler);
-        }
-    });
+    await pgBossManager.start(
+        pgBossConfig,
+    );
+
+    for (const topic of Object.values(kafkaProducersConfig)) {
+        await pgBossManager.kafka.start(
+            kafkaConfig,
+            topic,
+        );
+    }
 }
 
 async function bootstrap() {
