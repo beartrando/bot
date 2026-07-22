@@ -137,11 +137,10 @@ async function createKafkaConsumers(): Promise<void> {
 async function bootstrap(): Promise<void> {
 
     try {
-
         await startGrpc();
+        await registerPgBossWorkers();
         await startPgBoss();
         await createKafkaConsumers();
-        await registerPgBossWorkers();
         logger.info(
             '🚀 Ai service started',
         );

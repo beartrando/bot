@@ -17,25 +17,20 @@ export async function connectingRequest(topic: string, partition: number, messag
 }
 
 
-export async function sendToStream(jobs: Job[]): Promise<void> {
-    logger.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1sendToStream');
+export async function sendToStream(job: Job): Promise<void> {
+    logger.log('sendToStream');
+    console.log(job);
 
-    for (const job of jobs) {
-        logger.log('sendToStream');
-        console.log(job);
-
-        try {
-            const message = job?.data;
-            logger.log(message);
-            await battleClient.send(message);
-        } catch (error) {
-            logger.error(`[Websocket] Failed to process message`, {
-                rawValue: job?.data,
-                error,
-            });
-            throw error; // чтобы PgBoss сделал retry
-        }
+    try {
+        const message = job?.data;
+        logger.log(message);
+        await battleClient.send(message);
+    } catch (error) {
+        logger.error(`[Websocket] Failed to process message`, {
+            rawValue: job?.data,
+            error,
+        });
+        throw error; // чтобы PgBoss сделал retry
     }
 
 }
-
