@@ -14,7 +14,10 @@ export class GatewayClient {
     }
 
     async signIn(deviceId: string): Promise<grpcAuth.AuthObject> {
+        logger.info('signIn', deviceId);
         const resp = await this.request("auth/anonymousSignIn", {deviceId}, "POST") as grpcAuth.AuthObject;
+        logger.info('signIn', resp);
+
         this.jwt = resp.accessToken;
         return resp;
     }
