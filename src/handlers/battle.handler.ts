@@ -10,7 +10,7 @@ export const startBattle = async (req: streamingGrpc.StartBattleRequest) => {
     const message = streamingGrpc.BattleStreamRequest.create({start: req});
     logger.log('startBattle');
     logger.log(pgBossConsumersConfig.websocketSendEvent.topic, message);
-    await pgBossManager.enqueueEvent(pgBossConsumersConfig.websocketSendEvent.topic, message);
+    await pgBossManager.queue.enqueue(pgBossConsumersConfig.websocketSendEvent.topic, message);
 }
 
 export const makeMove = async (battle: battleGrpc.BattleObject) => {
@@ -31,7 +31,7 @@ export const makeMove = async (battle: battleGrpc.BattleObject) => {
             cellIdx
         })
     });
-    await pgBossManager.enqueueEvent(pgBossConsumersConfig.websocketSendEvent.topic, req);
+    await pgBossManager.queue.enqueue(pgBossConsumersConfig.websocketSendEvent.topic, req);
     logger.log('message moved to pgboss')
 }
 
