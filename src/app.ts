@@ -43,8 +43,9 @@ async function startGrpc(): Promise<void> {
 
 async function registerPgBossWorkers(): Promise<void> {
     const configs = Object.values(pgBossConsumersConfig);
-
     for (const { topic, handler } of configs) {
+        logger.info('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+        logger.info(topic)
         pgBossManager.workers.registerWorker(
             topic,
             handler,
@@ -57,9 +58,9 @@ async function registerPgBossWorkers(): Promise<void> {
 }
 
 async function startPgBoss(): Promise<void> {
-    void pgBossManager.start(
-        pgBossConfig,
-    );
+    void pgBossManager.start(pgBossConfig);
+
+    await pgBossManager.waitUntilReady();
 
     await initKafkaBridge();
 }
@@ -115,6 +116,7 @@ async function createKafkaConsumers(): Promise<void> {
     const configs = Object.values(
         kafkaConsumersConfig,
     );
+
     await retryKafkaInit(
         async () => {
             await Promise.all(
@@ -175,4 +177,5 @@ function sleep(
 }
 
 bootstrap();
+
 

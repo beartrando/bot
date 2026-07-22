@@ -8,8 +8,8 @@ import pgBossManager from "@shared/pg-boss-manager";
 
 export const startBattle = async (req: streamingGrpc.StartBattleRequest) => {
     const message = streamingGrpc.BattleStreamRequest.create({start: req});
-    logger.log('startBattle');
-    logger.log(pgBossConsumersConfig.websocketSendEvent.topic, message);
+    // logger.log('startBattle');
+    // logger.log(pgBossConsumersConfig.websocketSendEvent.topic, message);
     await pgBossManager.queue.enqueue(pgBossConsumersConfig.websocketSendEvent.topic, message);
 }
 
