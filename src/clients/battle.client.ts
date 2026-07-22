@@ -160,7 +160,7 @@ class BattleClient {
 
         this.disconnect();
         const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000);
-        logger.info("Schedule reconnect in " + delay / 1000);
+        logger.info("Schedule reconnect in " + delay / 1000 + "s");
 
         this.reconnectAttempts++;
 
