@@ -107,7 +107,6 @@ class BattleClient {
             return;
         }
 
-
         try {
             ws.send(streamingGrpc.BattleStreamRequest.encode(message).finish());
         } catch (err) {

@@ -17,17 +17,15 @@ export async function connectingRequest(topic: string, partition: number, messag
 }
 
 
-export async function sendToStream(job: Job): Promise<void> {
+export async function sendToStream(message: streamingGrpc.BattleStreamRequest): Promise<void> {
     logger.log('sendToStream');
-    console.log(job);
+    console.log(message);
 
     try {
-        const message = job?.data;
-        logger.log(message);
         await battleClient.send(message);
     } catch (error) {
         logger.error(`[Websocket] Failed to process message`, {
-            rawValue: job?.data,
+            rawValue: message,
             error,
         });
         throw error; // чтобы PgBoss сделал retry
