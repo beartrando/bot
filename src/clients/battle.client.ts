@@ -108,6 +108,7 @@ class BattleClient {
         }
 
         try {
+            logger.log(message);
             ws.send(streamingGrpc.BattleStreamRequest.encode(message).finish());
         } catch (err) {
             logger.error("Failed to send BattleStreamRequest", err);
