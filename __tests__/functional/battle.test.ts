@@ -17,8 +17,8 @@ describe("Gateway Service", () => {
         const deviceId1 = `device1-${Math.random().toString(36).substring(2, 8)}`;
         const deviceId2 = `device2-${Math.random().toString(36).substring(2, 8)}`;
 
-        console.log(deviceId1);
-        console.log(deviceId2);
+        // console.log(deviceId1);
+        // console.log(deviceId2);
 
         const gatewayClient1 = new GatewayClient();
         const gatewayClient2 = new GatewayClient();
@@ -36,10 +36,21 @@ describe("Gateway Service", () => {
         const profile1 = await gatewayClient1.fetchProfile();
         const profile2 = await gatewayClient2.fetchProfile();
 
-        console.log(profile1);
+        expect(profile1).toBeDefined();
 
-        const ws1 = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${gatewayClient1.getJwt()}`);
-        const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${gatewayClient2.getJwt()}`);
+        // console.log(profile1);
+
+        const ws1 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile1.id}`, {
+            headers: {
+                Authorization: `Bearer ${gatewayClient1.getJwt()}`,
+            },
+        });
+
+        const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile2.id}`, {
+            headers: {
+                Authorization: `Bearer ${gatewayClient2.getJwt()}`,
+            },
+        });
 
 
         const start = new Promise<void>(async (resolve) => {
@@ -47,7 +58,7 @@ describe("Gateway Service", () => {
             const gameplay = async (battleObject?: battleGrpc.BattleObject | null) => {
                 console.log(battleObject);
 
-                console.log('=====================================================================step ', counter);
+                // console.log('=====================================================================step ', counter);
                 if (!battleObject) {
                     const req = streamingGrpc.BattleStreamRequest.create({start: {}});
                     const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
@@ -56,7 +67,7 @@ describe("Gateway Service", () => {
                     const req = streamingGrpc.BattleStreamRequest.create({start: {}});
                     const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
                     ws2.send(buffer);
-                } else if (counter === 5) {
+                } else if (counter === 3) {
                     const req = streamingGrpc.BattleStreamRequest.create({
                         move: {
                             battleId: battleObject.id,
@@ -65,7 +76,7 @@ describe("Gateway Service", () => {
                     });
                     const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
                     ws1.send(buffer);
-                } else if (counter === 7) {
+                } else if (counter === 5) {
                     const req = streamingGrpc.BattleStreamRequest.create({
                         move: {
                             battleId: battleObject.id,
@@ -74,7 +85,7 @@ describe("Gateway Service", () => {
                     });
                     const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
                     ws2.send(buffer);
-                } else if (counter === 9) {
+                } else if (counter === 7) {
                     const req = streamingGrpc.BattleStreamRequest.create({
                         move: {
                             battleId: battleObject.id,
@@ -83,7 +94,7 @@ describe("Gateway Service", () => {
                     });
                     const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
                     ws1.send(buffer);
-                } else if (counter === 11) {
+                } else if (counter === 9) {
                     const req = streamingGrpc.BattleStreamRequest.create({
                         move: {
                             battleId: battleObject.id,
@@ -92,7 +103,7 @@ describe("Gateway Service", () => {
                     });
                     const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
                     ws2.send(buffer);
-                } else if (counter === 13) {
+                } else if (counter === 11) {
                     const req = streamingGrpc.BattleStreamRequest.create({
                         move: {
                             battleId: battleObject.id,
@@ -101,17 +112,17 @@ describe("Gateway Service", () => {
                     });
                     const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
                     ws1.send(buffer);
-                } else if (counter >= 15) {
+                } else if (counter >= 13) {
                     resolve();
                 }
-                console.log("-------------------------------------------------------------------------------------------------------------------------------");
+                // console.log("-------------------------------------------------------------------------------------------------------------------------------");
 
                 counter++;
             };
 
 
             ws1.on("message", (data: streamingGrpc.BattleStreamResponse) => {
-                console.log("------------------------------------------------------------------------------=1=- Got battle update:");
+                // console.log("------------------------------------------------------------------------------=1=- Got battle update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
                 const res = streamingGrpc.BattleStreamResponse.decode(buffer);
 
@@ -122,7 +133,7 @@ describe("Gateway Service", () => {
             });
 
             ws2.on("message", (data: streamingGrpc.BattleStreamResponse) => {
-                console.log("------------------------------------------------------------------------------=2=- Got battle update:");
+                // console.log("------------------------------------------------------------------------------=2=- Got battle update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
                 const res = streamingGrpc.BattleStreamResponse.decode(buffer);
 
@@ -142,12 +153,12 @@ describe("Gateway Service", () => {
 
         await start;
 
-        ws1.close();
-        ws2.close();
+        await ws1.close();
+        await ws2.close();
 
 
         ///
-        console.log('streams are closed')
+        // console.log('streams are closed')
 
 
         // });
