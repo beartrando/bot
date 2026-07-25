@@ -6,8 +6,8 @@ import {pgBossConsumersConfig} from "../config/pg.boss.config";
 import pgBossManager from "@shared/pg-boss-manager";
 
 
-export const startBattle = async (req: streamingGrpc.StartBattleRequest) => {
-    const message = streamingGrpc.BattleStreamRequest.create({start: req});
+export const startBattle = async (req: streamingGrpc.BattleStartRequest) => {
+    const message = streamingGrpc.BattleRequest.create({start: req});
     // logger.log('startBattle');
     // logger.log(pgBossConsumersConfig.websocketSendEvent.topic, message);
     await pgBossManager.queue.enqueue(pgBossConsumersConfig.websocketSendEvent.topic, message);
@@ -25,7 +25,7 @@ export const makeMove = async (battle: battleGrpc.BattleObject) => {
     }
 
     const battleId = battle.id;
-    const req = streamingGrpc.BattleStreamRequest.create({
+    const req = streamingGrpc.BattleRequest.create({
         move: streamingGrpc.BattleMoveRequest.create({
             battleId,
             cellIdx

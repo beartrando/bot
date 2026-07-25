@@ -100,7 +100,7 @@ class BattleClient {
     }
 
 
-    send = async (message: streamingGrpc.BattleStreamRequest): Promise<void> => {
+    send = async (message: streamingGrpc.BattleRequest): Promise<void> => {
         const ws = await this.getWs();
         if (!ws || ws.readyState !== WebSocket.OPEN) {
             console.error("⚠️ WebSocket not ready:", ws?.readyState);
@@ -109,9 +109,9 @@ class BattleClient {
 
         try {
             logger.log(message);
-            ws.send(streamingGrpc.BattleStreamRequest.encode(message).finish());
+            ws.send(streamingGrpc.BattleRequest.encode(message).finish());
         } catch (err) {
-            logger.error("Failed to send BattleStreamRequest", err);
+            logger.error("Failed to send BattleRequest", err);
             throw err;
         }
     };
@@ -129,7 +129,7 @@ class BattleClient {
     private messageHandler = (data: WebSocket.RawData) => {
         try {
             const buffer = new Uint8Array(data as ArrayBuffer);
-            const message = streamingGrpc.BattleStreamResponse.decode(buffer);
+            const message = streamingGrpc.BattleResponse.decode(buffer);
             logger.log("📩 Got response:", message);
             battleService.battleMessageHandler(message);
         } catch (err) {

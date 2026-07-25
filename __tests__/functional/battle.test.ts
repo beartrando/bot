@@ -60,57 +60,57 @@ describe("Gateway Service", () => {
 
                 // console.log('=====================================================================step ', counter);
                 if (!battleObject) {
-                    const req = streamingGrpc.BattleStreamRequest.create({start: {}});
-                    const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
+                    const req = streamingGrpc.BattleRequest.create({start: {}});
+                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter === 1) {
-                    const req = streamingGrpc.BattleStreamRequest.create({start: {}});
-                    const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
+                    const req = streamingGrpc.BattleRequest.create({start: {}});
+                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
                     ws2.send(buffer);
                 } else if (counter === 3) {
-                    const req = streamingGrpc.BattleStreamRequest.create({
+                    const req = streamingGrpc.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 4
                         }
                     });
-                    const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
+                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter === 5) {
-                    const req = streamingGrpc.BattleStreamRequest.create({
+                    const req = streamingGrpc.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 1
                         }
                     });
-                    const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
+                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
                     ws2.send(buffer);
                 } else if (counter === 7) {
-                    const req = streamingGrpc.BattleStreamRequest.create({
+                    const req = streamingGrpc.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 0
                         }
                     });
-                    const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
+                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter === 9) {
-                    const req = streamingGrpc.BattleStreamRequest.create({
+                    const req = streamingGrpc.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 2
                         }
                     });
-                    const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
+                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
                     ws2.send(buffer);
                 } else if (counter === 11) {
-                    const req = streamingGrpc.BattleStreamRequest.create({
+                    const req = streamingGrpc.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 8
                         }
                     });
-                    const buffer = streamingGrpc.BattleStreamRequest.encode(req).finish();
+                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter >= 13) {
                     resolve();
@@ -121,10 +121,10 @@ describe("Gateway Service", () => {
             };
 
 
-            ws1.on("message", (data: streamingGrpc.BattleStreamResponse) => {
+            ws1.on("message", (data: streamingGrpc.BattleResponse) => {
                 // console.log("------------------------------------------------------------------------------=1=- Got battle update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
-                const res = streamingGrpc.BattleStreamResponse.decode(buffer);
+                const res = streamingGrpc.BattleResponse.decode(buffer);
 
                 // console.log(res)
                 const battleObject = battleGrpc.BattleObject.create(res.battle);
@@ -132,10 +132,10 @@ describe("Gateway Service", () => {
                 gameplay(battleObject);
             });
 
-            ws2.on("message", (data: streamingGrpc.BattleStreamResponse) => {
+            ws2.on("message", (data: streamingGrpc.BattleResponse) => {
                 // console.log("------------------------------------------------------------------------------=2=- Got battle update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
-                const res = streamingGrpc.BattleStreamResponse.decode(buffer);
+                const res = streamingGrpc.BattleResponse.decode(buffer);
 
                 // console.log(res);
                 const battleObject = battleGrpc.BattleObject.create(res.battle);
