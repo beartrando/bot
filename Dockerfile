@@ -14,12 +14,12 @@ COPY package.json ./
 COPY pnpm-workspace.yaml ./
 COPY tsconfig.base.json ./
 
-COPY services/ai/package*.json ./services/ai/
-COPY services/ai/jest.config.js ./services/ai/
-COPY services/ai/tsconfig.json ./services/ai/
-COPY services/ai/src ./services/ai/src/
-COPY services/ai/__tests__ ./services/ai/__tests__/
-COPY services/ai/prisma ./services/ai/prisma/
+COPY services/bot/package*.json ./services/bot/
+COPY services/bot/jest.config.js ./services/bot/
+COPY services/bot/tsconfig.json ./services/bot/
+COPY services/bot/src ./services/bot/src/
+COPY services/bot/__tests__ ./services/bot/__tests__/
+COPY services/bot/prisma ./services/bot/prisma/
 
 RUN apt-get update && apt-get install -y protobuf-compiler
 
@@ -32,15 +32,15 @@ FROM base AS deps
 RUN pnpm fetch
 RUN pnpm install --offline --frozen-lockfile
 
-RUN mkdir -p ./services/ai/src/grpc/generated
-RUN pnpm --filter ai proto:generate
+RUN mkdir -p ./services/bot/src/grpc/generated
+RUN pnpm --filter bot proto:generate
 
-RUN pnpm --filter ai prisma:generate
+RUN pnpm --filter bot prisma:generate
 
 # ---------- DEV ----------
 FROM deps AS dev
 
-COPY services/ai/tsconfig.test.json ./services/ai/
+COPY services/bot/tsconfig.test.json ./services/bot/
 
 ENV NODE_ENV=development
 
@@ -50,7 +50,7 @@ USER node
 
 EXPOSE 50051
 
-CMD ["pnpm", "--filter", "ai", "dev"]
+CMD ["pnpm", "--filter", "bot", "dev"]
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
   CMD nc -z localhost 50051 || exit 1
@@ -65,9 +65,9 @@ RUN pnpm --filter @shared/grpc-client-manager build
 RUN pnpm --filter @shared/kafka-manager build
 RUN pnpm --filter @shared/pg-boss-manager build
 
-RUN pnpm --filter ai build
+RUN pnpm --filter bot build
 
-RUN pnpm --filter ai deploy /deploy --prod
+RUN pnpm --filter bot deploy /deploy --prod
 
 # ---------- PROD ----------
 FROM node:22 AS prod
@@ -104,5 +104,5 @@ RUN printf "%s\n" "$VERSION" > VERSION
 
 LABEL org.opencontainers.image.version="$VERSION"
 
-WORKDIR /usr/src/app/services/ai
+WORKDIR /usr/src/app/services/bot
 CMD ["npx", "prisma", "migrate", "deploy", "--schema=prisma/schema.prisma"]

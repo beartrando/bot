@@ -10,7 +10,7 @@ export const check = async (): Promise<healthGrpc.HealthReport> => {
     const [pgOk, kafkaOk] = await Promise.all([checkPostgres(), checkKafka()]);
 
     return {
-        service: 'ai',
+        service: 'bot',
         status:
             pgOk && kafkaOk
                 ? healthGrpc.HealthStatus.HEALTH_STATUS_OK
@@ -31,7 +31,7 @@ export const status = async (): Promise<healthGrpc.ServiceStatus> => {
     const uptimeMs = Date.now() - startedAt;
 
     return {
-        name: 'ai',
+        name: 'bot',
         version: process.env.BUILD_VERSION || 'dev',
         env: process.env.NODE_ENV || 'development',
         uptimeSeconds: {

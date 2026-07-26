@@ -2,16 +2,16 @@ import {connectingRequest} from '../lib/consumers';
 
 export const kafkaConfig = {
     brokers: process.env.KAFKA_BROKERS?.split(',') ?? ['kafka:9092',],
-    clientId: process.env.KAFKA_CLIENT_ID ?? 'ai-client',
-    groupId: process.env.KAFKA_GROUP_ID ?? 'ai-service',
+    clientId: process.env.KAFKA_CLIENT_ID ?? 'bot-client',
+    groupId: process.env.KAFKA_GROUP_ID ?? 'bot-service',
 };
 
 
 export const kafkaConsumersConfig = {
-    aiConnectingRequest: {
+    botConnectingRequest: {
         topic:
             process.env.KAFKA_TOPIC_AI_CONNECTING_REQUEST ??
-            "ai.connecting-request",
+            "bot.connecting-request",
         handler: connectingRequest,
     },
 };

@@ -6,7 +6,7 @@ import {pgBossConsumersConfig} from "../config/pg.boss.config";
 import pgBossManager from "@shared/pg-boss-manager";
 
 
-export const startBattle = async (req: streamingGrpc.BattleStartRequest) => {
+export const startBattle = async (req: streamingGrpc.BattleStart) => {
     const message = streamingGrpc.BattleRequest.create({start: req});
     // logger.log('startBattle');
     // logger.log(pgBossConsumersConfig.websocketSendEvent.topic, message);
@@ -26,7 +26,7 @@ export const makeMove = async (battle: battleGrpc.BattleObject) => {
 
     const battleId = battle.id;
     const req = streamingGrpc.BattleRequest.create({
-        move: streamingGrpc.BattleMoveRequest.create({
+        move: streamingGrpc.BattleMove.create({
             battleId,
             cellIdx
         })
@@ -42,8 +42,8 @@ const isMyTurn = async (battle: battleGrpc.BattleObject): Promise<boolean> => {
     const filledCount = battle.cells.filter(cell => cell !== battleGrpc.BattleCellValue.CELL_EMPTY).length;
 
     // вычисляем индекс текущего игрока
-    const currentPlayerIndex = filledCount % battle.players.length;
-    const currentPlayerId = battle.players[currentPlayerIndex];
+    const currentPlayerIndex = filledCount % battle.playerIds.length;
+    const currentPlayerId = battle.playerIds[currentPlayerIndex];
 
     // мой ли это ход?
     return currentPlayerId === profile.id;
@@ -52,7 +52,7 @@ const isMyTurn = async (battle: battleGrpc.BattleObject): Promise<boolean> => {
 
 export const calculateMove = async (battle: battleGrpc.BattleObject): Promise<number | null> => {
     const profile = await battleClient.getProfile();
-    const myIndex = battle.players.indexOf(profile.id);
+    const myIndex = battle.playerIds.indexOf(profile.id);
     if (myIndex === -1) return null;
 
     const mySymbol = myIndex === 0 ? battleGrpc.BattleCellValue.CELL_X : battleGrpc.BattleCellValue.CELL_O;
