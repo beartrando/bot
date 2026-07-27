@@ -32,7 +32,7 @@ export const makeMove = async (battle: battleGrpc.BattleObject) => {
         })
     });
     await pgBossManager.queue.enqueue(pgBossConsumersConfig.websocketSendEvent.topic, req);
-    logger.log('message moved to pgboss')
+    logger.log('message moved to pgBoss')
 }
 
 const isMyTurn = async (battle: battleGrpc.BattleObject): Promise<boolean> => {
