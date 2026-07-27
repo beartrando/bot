@@ -21,12 +21,13 @@ class BattleClient {
         }
         try {
             const response = await gatewayClient.signIn(config.deviceId);
-            if (!response || (response as any).error) {
+            logger.log(response);
+            if (!response || (response as any).error || !response.auth) {
                 logger.error("❌ Auth failed:", response);
                 this.auth = null;
                 throw new Error("Auth failed");
             }
-            this.auth = response as authGrpc.AuthObject;
+            this.auth = response.auth as authGrpc.AuthObject;
             return this.auth;
         } catch (err) {
             logger.error("❌ Auth error:", err);
@@ -40,12 +41,12 @@ class BattleClient {
         try {
             const response = await gatewayClient.fetchProfile();
 
-            if (!response || (response as any).error) {
+            if (!response || (response as any).error || !response.profile) {
                 logger.error("❌ Profile failed:", response);
                 this.auth = null;
                 throw new Error("Profile failed");
             }
-            this.profile = response as profileGrpc.ProfileObject;
+            this.profile = response.profile as profileGrpc.ProfileObject;
 
             return this.profile;
         } catch (err) {

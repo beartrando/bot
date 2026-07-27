@@ -7,7 +7,12 @@ export const kafkaConfig = {
 };
 
 
-export const kafkaConsumersConfig = {
+type ConsumerConfig = {
+    topic: string;
+    handler: (message: unknown) => Promise<void>;
+};
+
+export const kafkaConsumersConfig: Record<string, ConsumerConfig> = {
     botConnectingRequest: {
         topic:
             process.env.KAFKA_TOPIC_AI_CONNECTING_REQUEST ??

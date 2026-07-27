@@ -142,7 +142,7 @@ async function bootstrap(): Promise<void> {
         await startPgBoss();
         await createKafkaConsumers();
         logger.info(
-            '🚀 Ai service started',
+            '🚀 Bot service started',
         );
     } catch (err) {
         logger.error(
