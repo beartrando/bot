@@ -5,6 +5,11 @@ const httpGateway = httpGatewayHost + ':' + httpGatewayPort;
 
 
 export const config = {
+
+    appName: process.env.APP_NAME || 'bot',
+    appVersion: process.env.APP_VERSION || '0.0.0',
+    appEnv: process.env.APP_ENV || 'prod',
+
     grpcPort: Number(process.env.GRPC_PORT) || 50051,
     httpGatewayHost: httpGatewayHost,
     httpGatewayPort: httpGatewayPort,

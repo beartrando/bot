@@ -76,7 +76,7 @@ class BattleClient {
         const auth = await this.getAuth();
         const profile = await this.getProfile();
 
-        // logger.log(`ws://${config.webSocketStreaming}/battle?token=${auth.accessToken}&profileId=${profile.id}`);
+        // logger.log(`ws://${app.webSocketStreaming}/battle?token=${auth.accessToken}&profileId=${profile.id}`);
         this.ws = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${auth.accessToken}&profileId=${profile.id}`);
 
         this.ws.on("message", this.messageHandler);

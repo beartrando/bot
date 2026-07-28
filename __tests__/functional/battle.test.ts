@@ -1,5 +1,5 @@
-import * as battleGrpc from "../../src/grpc/generated/battle";
-import * as streamingGrpc from "../../src/grpc/generated/streaming";
+import * as battleGrpc from "../../src/infrastructure/grpc/generated/battle";
+import * as streamingGrpc from "../../src/infrastructure/grpc/generated/streaming";
 import config from "../../src/config/config";
 import jwt from "jsonwebtoken";
 import WebSocket from "ws";

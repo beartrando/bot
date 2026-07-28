@@ -19,7 +19,6 @@ COPY services/bot/jest.config.js ./services/bot/
 COPY services/bot/tsconfig.json ./services/bot/
 COPY services/bot/src ./services/bot/src/
 COPY services/bot/__tests__ ./services/bot/__tests__/
-COPY services/bot/prisma ./services/bot/prisma/
 
 RUN apt-get update && apt-get install -y protobuf-compiler
 
@@ -32,7 +31,7 @@ FROM base AS deps
 RUN pnpm fetch
 RUN pnpm install --offline --frozen-lockfile
 
-RUN mkdir -p ./services/bot/src/grpc/generated
+RUN mkdir -p ./services/bot/src/infrastructure/grpc/generated
 RUN pnpm --filter bot proto:generate
 
 RUN pnpm --filter bot prisma:generate
