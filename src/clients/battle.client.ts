@@ -1,20 +1,20 @@
 import WebSocket from "ws";
 import config from "../config/config";
 import gatewayClient from "./gateway.client";
-import * as streamingGrpc from "../grpc/generated/streaming";
-import * as authGrpc from "../grpc/generated/auth";
-import * as profileGrpc from "../grpc/generated/profile";
+import * as streamingProto from "../grpc/generated/streaming";
+import * as authProto from "../grpc/generated/auth";
+import * as profileProto from "../grpc/generated/profile";
 import logger from "@shared/logger";
 import * as battleService from "../services/battle.service";
 
 class BattleClient {
-    private auth: authGrpc.AuthObject | null = null;
-    private profile: profileGrpc.ProfileObject | null = null;
+    private auth: authProto.AuthObject | null = null;
+    private profile: profileProto.ProfileObject | null = null;
     private ws: WebSocket | null = null;
     private reconnectAttempts = 0;
     private reconnectFn: NodeJS.Timeout | null = null;
 
-    async getAuth(): Promise<authGrpc.AuthObject> {
+    async getAuth(): Promise<authProto.AuthObject> {
         if (this.auth) {
             // logger.info('this.auth', this.auth);
             return this.auth;
@@ -27,7 +27,7 @@ class BattleClient {
                 this.auth = null;
                 throw new Error("Auth failed");
             }
-            this.auth = response.auth as authGrpc.AuthObject;
+            this.auth = response.auth as authProto.AuthObject;
             return this.auth;
         } catch (err) {
             logger.error("❌ Auth error:", err);
@@ -36,7 +36,7 @@ class BattleClient {
         }
     }
 
-    async getProfile(): Promise<profileGrpc.ProfileObject> {
+    async getProfile(): Promise<profileProto.ProfileObject> {
         if (this.profile) return this.profile;
         try {
             const response = await gatewayClient.fetchProfile();
@@ -46,7 +46,7 @@ class BattleClient {
                 this.auth = null;
                 throw new Error("Profile failed");
             }
-            this.profile = response.profile as profileGrpc.ProfileObject;
+            this.profile = response.profile as profileProto.ProfileObject;
 
             return this.profile;
         } catch (err) {
@@ -101,7 +101,7 @@ class BattleClient {
     }
 
 
-    send = async (message: streamingGrpc.BattleRequest): Promise<void> => {
+    send = async (message: streamingProto.BattleRequest): Promise<void> => {
         const ws = await this.getWs();
         if (!ws || ws.readyState !== WebSocket.OPEN) {
             console.error("⚠️ WebSocket not ready:", ws?.readyState);
@@ -110,7 +110,7 @@ class BattleClient {
 
         try {
             logger.log(message);
-            ws.send(streamingGrpc.BattleRequest.encode(message).finish());
+            ws.send(streamingProto.BattleRequest.encode(message).finish());
         } catch (err) {
             logger.error("Failed to send BattleRequest", err);
             throw err;
@@ -130,7 +130,7 @@ class BattleClient {
     private messageHandler = (data: WebSocket.RawData) => {
         try {
             const buffer = new Uint8Array(data as ArrayBuffer);
-            const message = streamingGrpc.BattleResponse.decode(buffer);
+            const message = streamingProto.BattleResponse.decode(buffer);
             logger.log("📩 Got response:", message);
             battleService.battleMessageHandler(message);
         } catch (err) {

@@ -1,16 +1,16 @@
-const [host, portStr] = (process.env.HTTP_GATEWAY || "gateway:8080").split(":");
-const httpGatewayHost = host || "gateway";
-const httpGatewayPort = Number(portStr) || 8080;
+const [host, portStr] = (process.env.HTTP_GATEWAY ?? "gateway:8080").split(":");
+const httpGatewayHost = host ?? "gateway";
+const httpGatewayPort = Number(portStr) ?? 8080;
 const httpGateway = httpGatewayHost + ':' + httpGatewayPort;
 
 
 export const config = {
 
-    appName: process.env.APP_NAME || 'bot',
-    appVersion: process.env.APP_VERSION || '0.0.0',
-    appEnv: process.env.APP_ENV || 'prod',
+    appName: process.env.APP_NAME ?? 'bot',
+    appVersion: process.env.APP_VERSION ?? '0.0.0',
+    appEnv: process.env.APP_ENV ?? 'prod',
 
-    grpcPort: Number(process.env.GRPC_PORT) || 50051,
+    port: Number(process.env.GRPC_PORT) ?? 50051,
     httpGatewayHost: httpGatewayHost,
     httpGatewayPort: httpGatewayPort,
     httpGateway: httpGateway,
@@ -18,7 +18,7 @@ export const config = {
         throw new Error("JWT_ACCESS_SECRET missing");
     })(),
     webSocketStreaming: process.env.WEBSOCKET_STREAMING,
-    deviceId: process.env.DEVICE_ID || 'bot-device-id',
+    deviceId: process.env.DEVICE_ID ?? 'bot-device-id',
 };
 
 export default config;

@@ -1,5 +1,5 @@
-import * as battleGrpc from "../../src/infrastructure/grpc/generated/battle";
-import * as streamingGrpc from "../../src/infrastructure/grpc/generated/streaming";
+import * as battleProto from "../../src/contracts/proto/battle";
+import * as streamingProto from "../../src/contracts/proto/streaming";
 import config from "../../src/config/config";
 import jwt from "jsonwebtoken";
 import WebSocket from "ws";
@@ -55,62 +55,62 @@ describe("Gateway Service", () => {
 
         const start = new Promise<void>(async (resolve) => {
             let counter = 0;
-            const gameplay = async (battleObject?: battleGrpc.BattleObject | null) => {
+            const gameplay = async (battleObject?: battleProto.BattleObject | null) => {
                 console.log(battleObject);
 
                 // console.log('=====================================================================step ', counter);
                 if (!battleObject) {
-                    const req = streamingGrpc.BattleRequest.create({start: {}});
-                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
+                    const req = streamingProto.BattleRequest.create({start: {}});
+                    const buffer = streamingProto.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter === 1) {
-                    const req = streamingGrpc.BattleRequest.create({start: {}});
-                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
+                    const req = streamingProto.BattleRequest.create({start: {}});
+                    const buffer = streamingProto.BattleRequest.encode(req).finish();
                     ws2.send(buffer);
                 } else if (counter === 3) {
-                    const req = streamingGrpc.BattleRequest.create({
+                    const req = streamingProto.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 4
                         }
                     });
-                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
+                    const buffer = streamingProto.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter === 5) {
-                    const req = streamingGrpc.BattleRequest.create({
+                    const req = streamingProto.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 1
                         }
                     });
-                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
+                    const buffer = streamingProto.BattleRequest.encode(req).finish();
                     ws2.send(buffer);
                 } else if (counter === 7) {
-                    const req = streamingGrpc.BattleRequest.create({
+                    const req = streamingProto.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 0
                         }
                     });
-                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
+                    const buffer = streamingProto.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter === 9) {
-                    const req = streamingGrpc.BattleRequest.create({
+                    const req = streamingProto.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 2
                         }
                     });
-                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
+                    const buffer = streamingProto.BattleRequest.encode(req).finish();
                     ws2.send(buffer);
                 } else if (counter === 11) {
-                    const req = streamingGrpc.BattleRequest.create({
+                    const req = streamingProto.BattleRequest.create({
                         move: {
                             battleId: battleObject.id,
                             cellIdx: 8
                         }
                     });
-                    const buffer = streamingGrpc.BattleRequest.encode(req).finish();
+                    const buffer = streamingProto.BattleRequest.encode(req).finish();
                     ws1.send(buffer);
                 } else if (counter >= 13) {
                     resolve();
@@ -121,24 +121,24 @@ describe("Gateway Service", () => {
             };
 
 
-            ws1.on("message", (data: streamingGrpc.BattleResponse) => {
+            ws1.on("message", (data: streamingProto.BattleResponse) => {
                 // console.log("------------------------------------------------------------------------------=1=- Got battle update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
-                const res = streamingGrpc.BattleResponse.decode(buffer);
+                const res = streamingProto.BattleResponse.decode(buffer);
 
                 // console.log(res)
-                const battleObject = battleGrpc.BattleObject.create(res.battle);
+                const battleObject = battleProto.BattleObject.create(res.battle);
 
                 gameplay(battleObject);
             });
 
-            ws2.on("message", (data: streamingGrpc.BattleResponse) => {
+            ws2.on("message", (data: streamingProto.BattleResponse) => {
                 // console.log("------------------------------------------------------------------------------=2=- Got battle update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
-                const res = streamingGrpc.BattleResponse.decode(buffer);
+                const res = streamingProto.BattleResponse.decode(buffer);
 
                 // console.log(res);
-                const battleObject = battleGrpc.BattleObject.create(res.battle);
+                const battleObject = battleProto.BattleObject.create(res.battle);
                 gameplay(battleObject);
             });
 
