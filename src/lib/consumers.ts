@@ -2,7 +2,6 @@ import {connectToBattle} from "../services/battle.service";
 import logger from "@shared/logger";
 import * as streamingProto from "../grpc/generated/streaming";
 import battleClient from "../clients/battle.client";
-import {Job} from 'pg-boss';
 
 export async function connectingRequest(topic: string, partition: number, message: streamingProto.BattleStart): Promise<void> {
     try {

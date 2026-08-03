@@ -34,6 +34,9 @@ RUN pnpm install --offline --frozen-lockfile
 RUN mkdir -p ./services/bot/src/contracts/proto
 RUN pnpm --filter bot proto:generate
 
+RUN mkdir -p ./shared/errors/src/contracts/proto
+RUN pnpm --filter @shared/errors proto:generate
+
 RUN pnpm --filter bot prisma:generate
 
 # ---------- DEV ----------

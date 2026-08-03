@@ -1,9 +1,7 @@
 import * as battleProto from "../../src/contracts/proto/battle";
 import * as streamingProto from "../../src/contracts/proto/streaming";
 import config from "../../src/config/config";
-import jwt from "jsonwebtoken";
 import WebSocket from "ws";
-import * as gatewayClient from "../../src/clients/gateway.client";
 import {GatewayClient} from "../../src/clients/gateway.client";
 
 function delay(ms: number) {
