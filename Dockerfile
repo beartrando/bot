@@ -113,4 +113,4 @@ LABEL org.opencontainers.image.version="$VERSION"
 
 WORKDIR /usr/src/app/services/bot
 
-CMD ["pnpm", "--filter", "bot", "migrate"]
+CMD ["pnpm", "--filter", "bot", "migrate:deploy"]

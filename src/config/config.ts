@@ -14,8 +14,8 @@ export const config = {
     httpGatewayHost: httpGatewayHost,
     httpGatewayPort: httpGatewayPort,
     httpGateway: httpGateway,
-    jwtAccessSecret: process.env.JWT_ACCESS_SECRET ?? (() => {
-        throw new Error("JWT_ACCESS_SECRET missing");
+    accessSecret: process.env.ACCESS_SECRET ?? (() => {
+        throw new Error("ACCESS_SECRET missing");
     })(),
     webSocketStreaming: process.env.WEBSOCKET_STREAMING,
     deviceId: process.env.DEVICE_ID ?? 'bot-device-id',
