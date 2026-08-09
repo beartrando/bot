@@ -715,15 +715,6 @@ export const AuthService = {
     responseSerialize: (value: UserResponse): Buffer => Buffer.from(UserResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer): UserResponse => UserResponse.decode(value),
   },
-  getMe: {
-    path: "/auth.Auth/GetMe" as const,
-    requestStream: false as const,
-    responseStream: false as const,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: UserResponse): Buffer => Buffer.from(UserResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): UserResponse => UserResponse.decode(value),
-  },
 } as const;
 
 export interface AuthServer extends UntypedServiceImplementation {
@@ -731,7 +722,6 @@ export interface AuthServer extends UntypedServiceImplementation {
   refreshTokens: handleUnaryCall<RefreshTokensRequest, AuthResponse>;
   anonymousSignIn: handleUnaryCall<AnonymousSignInRequest, AuthResponse>;
   get: handleUnaryCall<UserIdRequest, UserResponse>;
-  getMe: handleUnaryCall<Empty, UserResponse>;
 }
 
 export interface AuthClient extends Client {
@@ -785,18 +775,6 @@ export interface AuthClient extends Client {
   ): ClientUnaryCall;
   get(
     request: UserIdRequest,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: UserResponse) => void,
-  ): ClientUnaryCall;
-  getMe(request: Empty, callback: (error: ServiceError | null, response: UserResponse) => void): ClientUnaryCall;
-  getMe(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: UserResponse) => void,
-  ): ClientUnaryCall;
-  getMe(
-    request: Empty,
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: UserResponse) => void,

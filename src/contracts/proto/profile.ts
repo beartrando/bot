@@ -384,15 +384,6 @@ export const ProfileObject: MessageFns<ProfileObject> = {
 
 export type ProfileService = typeof ProfileService;
 export const ProfileService = {
-  getMe: {
-    path: "/profile.Profile/GetMe" as const,
-    requestStream: false as const,
-    responseStream: false as const,
-    requestSerialize: (value: Empty): Buffer => Buffer.from(Empty.encode(value).finish()),
-    requestDeserialize: (value: Buffer): Empty => Empty.decode(value),
-    responseSerialize: (value: ProfileResponse): Buffer => Buffer.from(ProfileResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer): ProfileResponse => ProfileResponse.decode(value),
-  },
   getByUser: {
     path: "/profile.Profile/GetByUser" as const,
     requestStream: false as const,
@@ -423,25 +414,12 @@ export const ProfileService = {
 } as const;
 
 export interface ProfileServer extends UntypedServiceImplementation {
-  getMe: handleUnaryCall<Empty, ProfileResponse>;
   getByUser: handleUnaryCall<UserIdRequest, ProfileResponse>;
   get: handleUnaryCall<ProfileIdRequest, ProfileResponse>;
   getOrCreate: handleUnaryCall<Empty, ProfileResponse>;
 }
 
 export interface ProfileClient extends Client {
-  getMe(request: Empty, callback: (error: ServiceError | null, response: ProfileResponse) => void): ClientUnaryCall;
-  getMe(
-    request: Empty,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
-  getMe(
-    request: Empty,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: ProfileResponse) => void,
-  ): ClientUnaryCall;
   getByUser(
     request: UserIdRequest,
     callback: (error: ServiceError | null, response: ProfileResponse) => void,
