@@ -8,7 +8,7 @@ const pgBossConfig = {
 
 export const pgBossConsumersConfig = {
     websocketSendEvent: {
-        topic: process.env.PG_BOSS_WEBSOCKET_SEND_EVENT ?? 'pg-boss.websocket-send-event',
+        topic: process.env.PG_BOSS_WEBSOCKET_SEND_EVENT ?? 'pg-boss.websocket-server-send-event',
         handler: sendToStream
     },
 }
