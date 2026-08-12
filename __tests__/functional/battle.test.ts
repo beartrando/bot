@@ -120,7 +120,7 @@ describe("Gateway Service", () => {
 
 
             ws1.on("message", (data: streamingProto.BattleResponse) => {
-                // console.log("------------------------------------------------------------------------------=1=- Got battle update:");
+                // console.log("------------------------------------------------------------------------------=1=- Got engine update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
                 const res = streamingProto.BattleResponse.decode(buffer);
 
@@ -131,7 +131,7 @@ describe("Gateway Service", () => {
             });
 
             ws2.on("message", (data: streamingProto.BattleResponse) => {
-                // console.log("------------------------------------------------------------------------------=2=- Got battle update:");
+                // console.log("------------------------------------------------------------------------------=2=- Got engine update:");
                 const buffer = new Uint8Array(data as ArrayBuffer);
                 const res = streamingProto.BattleResponse.decode(buffer);
 

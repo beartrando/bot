@@ -2,13 +2,13 @@ import * as grpc from '@grpc/grpc-js';
 import * as profileProto from '../../../contracts/proto/profile';
 import * as battleProto from '../../../contracts/proto/battle';
 import logger from "@shared/logger";
-import GetUseCase from "../../../application/use-cases/battle/get";
+import GetUseCase from "../../../application/use-cases/engine/get";
 import callbackError from "./callback.error";
 import BattleProtoMapper from "../mappers/battle.proto.mapper";
 import Id from "../../../domain/value-objects/id.vo";
 import {NotFoundError} from "@shared/errors";
-import StartUseCase from "../../../application/use-cases/battle/start";
-import GetActiveByProfileUseCase from "../../../application/use-cases/battle/get-active-by-profile";
+import StartUseCase from "../../../application/use-cases/engine/start";
+import GetActiveByProfileUseCase from "../../../application/use-cases/engine/get-active-by-profile";
 
 
 export class BattleHandler {

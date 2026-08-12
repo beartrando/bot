@@ -1,6 +1,6 @@
 import * as battleProto from "../../../../contracts/proto/battle";
 
-import CellValueEnum from "../../../../domain/enums/battle/cell-value.enum";
+import CellValueEnum from "../../../../domain/enums/engine/cell-value.enum";
 
 export class CellValueProtoMapper {
 

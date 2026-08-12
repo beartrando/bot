@@ -2,7 +2,7 @@
 // versions:
 //   protoc-gen-ts_proto  v2.11.10
 //   protoc               v3.6.1
-// source: battle.proto
+// source: engine.proto
 
 /* eslint-disable */
 import { BinaryReader, BinaryWriter } from "@bufbuild/protobuf/wire";
@@ -726,7 +726,7 @@ export const BattlesResponse: MessageFns<BattlesResponse> = {
 export type BattleService = typeof BattleService;
 export const BattleService = {
   get: {
-    path: "/battle.Battle/Get" as const,
+    path: "/engine.Battle/Get" as const,
     requestStream: false as const,
     responseStream: false as const,
     requestSerialize: (value: BattleIdRequest): Buffer => Buffer.from(BattleIdRequest.encode(value).finish()),
@@ -735,7 +735,7 @@ export const BattleService = {
     responseDeserialize: (value: Buffer): BattlesResponse => BattlesResponse.decode(value),
   },
   getActiveByProfile: {
-    path: "/battle.Battle/GetActiveByProfile" as const,
+    path: "/engine.Battle/GetActiveByProfile" as const,
     requestStream: false as const,
     responseStream: false as const,
     requestSerialize: (value: ProfileIdRequest): Buffer => Buffer.from(ProfileIdRequest.encode(value).finish()),
@@ -744,7 +744,7 @@ export const BattleService = {
     responseDeserialize: (value: Buffer): BattlesResponse => BattlesResponse.decode(value),
   },
   start: {
-    path: "/battle.Battle/Start" as const,
+    path: "/engine.Battle/Start" as const,
     requestStream: false as const,
     responseStream: false as const,
     requestSerialize: (value: BattleStartRequest): Buffer => Buffer.from(BattleStartRequest.encode(value).finish()),
@@ -808,7 +808,7 @@ export interface BattleClient extends Client {
   ): ClientUnaryCall;
 }
 
-export const BattleClient = makeGenericClientConstructor(BattleService, "battle.Battle") as unknown as {
+export const BattleClient = makeGenericClientConstructor(BattleService, "engine.Battle") as unknown as {
   new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): BattleClient;
   service: typeof BattleService;
   serviceName: string;
