@@ -1,6 +1,6 @@
 import * as battleProto from "../../src/contracts/proto/battle";
 import * as streamingProto from "../../src/contracts/proto/streaming";
-import config from "../../src/config/config";
+import config from "../../src/configs/configs";
 import WebSocket from "ws";
 import {GatewayClient} from "../../src/clients/gateway.client";
 

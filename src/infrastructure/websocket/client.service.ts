@@ -3,8 +3,9 @@ import logger from "@shared/logger";
 import WebsocketClientConfig from "./types/websocket-client-config";
 import WebsocketConnectionHandlerInterface from "./interfaces/websocket-connection-handler.interface";
 
-export class WebsocketServerService {
+export class WebsocketClientService {
     constructor(
+        private readonly config: WebsocketClientConfig,
     ) {
     }
 
@@ -19,4 +20,4 @@ export class WebsocketServerService {
     }
 }
 
-export default WebsocketServerService;
+export default WebsocketClientService;

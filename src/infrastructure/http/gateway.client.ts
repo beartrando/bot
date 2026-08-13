@@ -1,4 +1,4 @@
-import config from "../config/config";
+import config from "../configs/configs";
 import http from "node:http";
 import * as grpcAuth from "../grpc/generated/auth";
 import * as grpcProfile from "../grpc/generated/profile";

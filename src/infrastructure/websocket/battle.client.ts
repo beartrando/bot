@@ -1,5 +1,5 @@
 import WebSocket from "ws";
-import config from "../config/config";
+import config from "../configs/configs";
 import gatewayClient from "./gateway.client";
 import * as streamingProto from "../grpc/generated/streaming";
 import * as authProto from "../grpc/generated/auth";

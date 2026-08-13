@@ -4,64 +4,35 @@ import GrpcService from "../infrastructure/grpc/service";
 
 import AuthService from "../infrastructure/auth/service";
 import authConfig from "../infrastructure/auth/auth.config";
-
-import CacheService from "../infrastructure/cache/service";
-import redisConfig from "../infrastructure/cache/configs/redis.config";
 import JobService from "../infrastructure/job/service";
 import jobConfig from "../infrastructure/job/job.config";
 import messageConfig from "../infrastructure/message/configs/message.config";
 import messageProducersConfig from "../infrastructure/message/configs/producers.config";
-
-import TimerService from "../infrastructure/timer/service";
 import grpcConfig from "../infrastructure/grpc/configs/grpc.config";
 import HealthUseCase from "../application/use-cases/health/health";
 import websocketClientConfig from "../infrastructure/websocket/configs/websocket-client.config";
 import MessageService from "../infrastructure/message/service";
-import WebsocketService from "../infrastructure/websocket-server/service";
+import WebsocketClientService from "../infrastructure/websocket/client.service";
 import StatusUseCase from "../application/use-cases/health/status";
 import LivezUseCase from "../application/use-cases/health/livez";
 import ReadyzUseCase from "../application/use-cases/health/readyz";
 import HealthHandler from "../infrastructure/grpc/handlers/health.handler";
 import messageConsumersConfig from "../infrastructure/message/configs/consumers.config";
-import GrpcStreamService from "../infrastructure/grpc-stream/service";
-import AuthorizeProfileUseCase from "../application/use-cases/auth/authorize-profile";
-import ProfileClient from "../infrastructure/grpc/clients/profile.client";
-import StateStore from "../infrastructure/state-store/state-stores/state-store";
-import Id from "../domain/common/value-objects/id.vo";
-
-import {WebSocket,} from "ws";
-import BattleLeaveUseCase from "../application/use-cases/battle/battle-leave";
-import BattleClient from "../infrastructure/grpc/clients/battle.client";
-import ConnectionHandler from "../infrastructure/websocket-server/connection.handler";
-import SocketContext from "../infrastructure/websocket-server/types/socket-context";
-import BattleWebsocketsRegistry from "../infrastructure/websocket-server/registers/battle-websockets.registry";
-import BattleTimeoutCallbackFactory from "../infrastructure/timer/callbacks/battle-timeout-callback-factory";
-import BattleHandler from "../infrastructure/websocket-server/handlers/battle.handler";
-import BattleStartUseCase from "../application/use-cases/battle/battle-start";
-import BattleMoveUseCase from "../application/use-cases/battle/battle-move";
-import BattleConnectBotUseCase from "../application/use-cases/battle/battle-connect-bot";
-import EngineStream from "../infrastructure/grpc-stream/channels/engine.stream";
-import BattleStartedUseCase from "../application/use-cases/battle/battle-started";
-import BattleUpdatedUseCase from "../application/use-cases/battle/battle-updated";
-import * as engineProto from "../contracts/proto/engine";
-import BattleTimeoutUseCase from "../application/use-cases/battle/battle-timeout";
-import TimerCallbackFactoryHolder from "../infrastructure/timer/callback-factory-holder";
-import TimerKey from "../infrastructure/timer/value-objects/timer-key.vo";
 
 
 function buildApplication() {
-    // const authService = new AuthService(authConfig);
+    const authService = new AuthService(authConfig);
     // const timerCallbackFactoryHolder = new TimerCallbackFactoryHolder<WebSocket>();
     // const timerService = new TimerService<TimerKey, WebSocket>(timerCallbackFactoryHolder);
     // const cacheService = new CacheService(redisConfig);
     // const grpcStreamService = new GrpcStreamService<engineProto.BattleRequest>();
-    //
-    // const jobService = new JobService(
-    //     jobConfig,
-    //     messageConfig,
-    //     messageProducersConfig,
-    // );
-    //
+
+    const jobService = new JobService(
+        jobConfig,
+        messageConfig,
+        messageProducersConfig,
+    );
+
     // const profileClinent = new ProfileClient(grpcConfig.serviceProfileUrl);
     //
     // const authorizeProfileUseCase = new AuthorizeProfileUseCase(
@@ -75,13 +46,13 @@ function buildApplication() {
     // );
     //
     // timerCallbackFactoryHolder.factory = battleTimeoutCallbackFactory;
-    //
-    // const messageService = new MessageService(
-    //     messageConfig,
-    //     messageConsumersConfig,
-    //     // battleStartedConsumer,
-    // );
-    //
+
+    const messageService = new MessageService(
+        messageConfig,
+        messageConsumersConfig,
+        // battleStartedConsumer,
+    );
+
     // const wsSocketContextStateStore = new StateStore<WebSocket, SocketContext>();
     // const battleWsStateStore = new StateStore<Id, Set<WebSocket>>();
     //
@@ -132,9 +103,9 @@ function buildApplication() {
     //
     // connectionHandler.registerHandler('/battle', battleHandler);
 
-    const websocketService = new WebsocketService(
+    const websocketClientService = new WebsocketClientService(
         websocketClientConfig,
-        connectionHandler,
+        // connectionHandler,
     );
 
     // const battleStartedUseCase = new BattleStartedUseCase;
@@ -146,38 +117,38 @@ function buildApplication() {
     // );
     //
     // grpcStreamService.stream = engineStream;
-    //
-    // const healthUseCase = new HealthUseCase(
-    //     jobService,
-    //     messageService,
-    //     cacheService,
-    //     websocketService,
-    //     grpcStreamService,
-    // );
-    //
-    // const statusUseCase = new StatusUseCase();
-    // const livezUseCase = new LivezUseCase();
-    // const readyzUseCase = new ReadyzUseCase();
-    //
-    // const healthHandler = new HealthHandler(
-    //     healthUseCase,
-    //     statusUseCase,
-    //     livezUseCase,
-    //     readyzUseCase,
-    // );
-    //
-    // const grpcService = new GrpcService(
-    //     grpcConfig.port,
-    //     healthHandler,
-    // );
+
+    const healthUseCase = new HealthUseCase(
+        jobService,
+        messageService,
+        // cacheService,
+        websocketClientService,
+        // grpcStreamService,
+    );
+
+    const statusUseCase = new StatusUseCase();
+    const livezUseCase = new LivezUseCase();
+    const readyzUseCase = new ReadyzUseCase();
+
+    const healthHandler = new HealthHandler(
+        healthUseCase,
+        statusUseCase,
+        livezUseCase,
+        readyzUseCase,
+    );
+
+    const grpcService = new GrpcService(
+        grpcConfig.port,
+        healthHandler,
+    );
 
 
     return new Application(
         grpcService,
         jobService,
         messageService,
-        cacheService,
-        websocketService,
+        // cacheService,
+        websocketClientService,
     );
 }
 

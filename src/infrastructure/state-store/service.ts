@@ -2,7 +2,7 @@
 // import {
 //     StateStoreEntity,
 //     StateStoreKey,
-// } from "./configs/state-store.config";
+// } from "./configs/state-store.configs";
 //
 // export class StateStoreService {
 //     private readonly registers = new Map<
