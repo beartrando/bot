@@ -22,10 +22,6 @@ import messageConsumersConfig from "../infrastructure/message/configs/consumers.
 
 function buildApplication() {
     const authService = new AuthService(authConfig);
-    // const timerCallbackFactoryHolder = new TimerCallbackFactoryHolder<WebSocket>();
-    // const timerService = new TimerService<TimerKey, WebSocket>(timerCallbackFactoryHolder);
-    // const cacheService = new CacheService(redisConfig);
-    // const grpcStreamService = new GrpcStreamService<engineProto.BattleRequest>();
 
     const jobService = new JobService(
         jobConfig,
@@ -33,97 +29,19 @@ function buildApplication() {
         messageProducersConfig,
     );
 
-    // const profileClinent = new ProfileClient(grpcConfig.serviceProfileUrl);
-    //
-    // const authorizeProfileUseCase = new AuthorizeProfileUseCase(
-    //     profileClinent,
-    // );
-    //
-    // const battleTimeoutUseCase = new BattleTimeoutUseCase(timerService);
-    //
-    // const battleTimeoutCallbackFactory = new BattleTimeoutCallbackFactory(
-    //     battleTimeoutUseCase,
-    // );
-    //
-    // timerCallbackFactoryHolder.factory = battleTimeoutCallbackFactory;
-
     const messageService = new MessageService(
         messageConfig,
         messageConsumersConfig,
-        // battleStartedConsumer,
     );
-
-    // const wsSocketContextStateStore = new StateStore<WebSocket, SocketContext>();
-    // const battleWsStateStore = new StateStore<Id, Set<WebSocket>>();
-    //
-    // const battleWebsocketsRegistry = new BattleWebsocketsRegistry(
-    //     wsSocketContextStateStore,
-    //     battleWsStateStore,
-    //     timerService,
-    // );
-    //
-    // const battleClient = new BattleClient(grpcConfig.serviceBattleUrl);
-    //
-    // const battleLeaveUseCase = new BattleLeaveUseCase(
-    //     battleWebsocketsRegistry,
-    //     grpcStreamService,
-    // );
-    //
-    // const battleStartUseCase = new BattleStartUseCase(
-    //     battleWebsocketsRegistry,
-    //     battleClient,
-    // );
-    // const battleMoveUseCase = new BattleMoveUseCase(
-    //     battleWebsocketsRegistry,
-    //     grpcStreamService,
-    // );
-    //
-    // const battleConnectBotUseCase = new BattleConnectBotUseCase(
-    //     jobService,
-    //     wsSocketContextStateStore,
-    //     battleWsStateStore,
-    //     messageProducersConfig.aiConnectingRequest,
-    // );
-    //
-    // const battleHandler = new BattleHandler(
-    //     timerService,
-    //     battleStartUseCase,
-    //     battleMoveUseCase,
-    //     battleConnectBotUseCase,
-    //     battleLeaveUseCase,
-    // );
-    //
-    // const connectionHandler = new ConnectionHandler(
-    //     authService,
-    //     authorizeProfileUseCase,
-    //     battleLeaveUseCase,
-    //     battleWebsocketsRegistry,
-    //     timerService,
-    // );
-    //
-    // connectionHandler.registerHandler('/battle', battleHandler);
 
     const websocketClientService = new WebsocketClientService(
         websocketClientConfig,
-        // connectionHandler,
     );
-
-    // const battleStartedUseCase = new BattleStartedUseCase;
-    // const battleUpdatedUseCase = new BattleUpdatedUseCase;
-    //
-    // const engineStream = new EngineStream(
-    //     grpcConfig.serviceEngineUrl,
-    //     battleUpdatedUseCase
-    // );
-    //
-    // grpcStreamService.stream = engineStream;
 
     const healthUseCase = new HealthUseCase(
         jobService,
         messageService,
-        // cacheService,
         websocketClientService,
-        // grpcStreamService,
     );
 
     const statusUseCase = new StatusUseCase();
@@ -142,12 +60,10 @@ function buildApplication() {
         healthHandler,
     );
 
-
     return new Application(
         grpcService,
         jobService,
         messageService,
-        // cacheService,
         websocketClientService,
     );
 }

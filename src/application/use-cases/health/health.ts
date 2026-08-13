@@ -24,9 +24,9 @@ export class HealthUseCase {
 
 
         const components = {
-            jobService: jobServiceOk,
-            messageService: messageServiceOk,
-            websocketClientService: websocketClientServiceOk,
+            job: jobServiceOk,
+            message: messageServiceOk,
+            websocketClient: websocketClientServiceOk,
         };
 
         return {

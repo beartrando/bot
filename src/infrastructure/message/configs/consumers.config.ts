@@ -1,17 +1,8 @@
-import {connectingRequest} from "../../../lib/consumers";
-
-export const messageConsumersConfig: Record<string, string> = {};
-
-
-// export const messageConsumersConfig: Record<string, ConsumerConfig> = {
-//     botConnectingRequest: {
-//         topic:
-//             process.env.MESSAGE_TOPIC_AI_CONNECTING_REQUEST ??
-//             "bot.connecting-request",
-//         handler: connectingRequest,
-//     },
-// };
-
+export const messageConsumersConfig: Record<string, string> = {
+    botConnectingRequest: process.env.MESSAGE_TOPIC_AI_CONNECTING_REQUEST ?? "bot.connecting-request",
+};
 
 export default messageConsumersConfig;
+
+
 
