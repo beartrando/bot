@@ -2,7 +2,6 @@ import * as streamingProto from "../grpc/generated/streaming";
 import * as battleProto from "../grpc/generated/battle";
 import battleClient from "../clients/battle.client";
 import logger from "@shared/logger";
-import {pgBossConsumersConfig} from "../config/pg-boss.config";
 import pgBossManager from "@shared/pg-boss-manager";
 
 
