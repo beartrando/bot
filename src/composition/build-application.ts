@@ -15,7 +15,7 @@ import messageProducersConfig from "../infrastructure/message/configs/producers.
 import TimerService from "../infrastructure/timer/service";
 import grpcConfig from "../infrastructure/grpc/configs/grpc.config";
 import HealthUseCase from "../application/use-cases/health/health";
-import websocketConfig from "../infrastructure/websocket-server/configs/websocket.config";
+import websocketClientConfig from "../infrastructure/websocket/configs/websocket-client.config";
 import MessageService from "../infrastructure/message/service";
 import WebsocketService from "../infrastructure/websocket-server/service";
 import StatusUseCase from "../application/use-cases/health/status";
@@ -50,126 +50,126 @@ import TimerKey from "../infrastructure/timer/value-objects/timer-key.vo";
 
 
 function buildApplication() {
-    const authService = new AuthService(authConfig);
-    const timerCallbackFactoryHolder = new TimerCallbackFactoryHolder<WebSocket>();
-    const timerService = new TimerService<TimerKey, WebSocket>(timerCallbackFactoryHolder);
-    const cacheService = new CacheService(redisConfig);
-    const grpcStreamService = new GrpcStreamService<engineProto.BattleRequest>();
-
-    const jobService = new JobService(
-        jobConfig,
-        messageConfig,
-        messageProducersConfig,
-    );
-
-    const profileClinent = new ProfileClient(grpcConfig.serviceProfileUrl);
-
-    const authorizeProfileUseCase = new AuthorizeProfileUseCase(
-        profileClinent,
-    );
-
-    const battleTimeoutUseCase = new BattleTimeoutUseCase(timerService);
-
-    const battleTimeoutCallbackFactory = new BattleTimeoutCallbackFactory(
-        battleTimeoutUseCase,
-    );
-
-    timerCallbackFactoryHolder.factory = battleTimeoutCallbackFactory;
-
-    const messageService = new MessageService(
-        messageConfig,
-        messageConsumersConfig,
-        // battleStartedConsumer,
-    );
-
-    const wsSocketContextStateStore = new StateStore<WebSocket, SocketContext>();
-    const battleWsStateStore = new StateStore<Id, Set<WebSocket>>();
-
-    const battleWebsocketsRegistry = new BattleWebsocketsRegistry(
-        wsSocketContextStateStore,
-        battleWsStateStore,
-        timerService,
-    );
-
-    const battleClient = new BattleClient(grpcConfig.serviceBattleUrl);
-
-    const battleLeaveUseCase = new BattleLeaveUseCase(
-        battleWebsocketsRegistry,
-        grpcStreamService,
-    );
-
-    const battleStartUseCase = new BattleStartUseCase(
-        battleWebsocketsRegistry,
-        battleClient,
-    );
-    const battleMoveUseCase = new BattleMoveUseCase(
-        battleWebsocketsRegistry,
-        grpcStreamService,
-    );
-
-    const battleConnectBotUseCase = new BattleConnectBotUseCase(
-        jobService,
-        wsSocketContextStateStore,
-        battleWsStateStore,
-        messageProducersConfig.aiConnectingRequest,
-    );
-
-    const battleHandler = new BattleHandler(
-        timerService,
-        battleStartUseCase,
-        battleMoveUseCase,
-        battleConnectBotUseCase,
-        battleLeaveUseCase,
-    );
-
-    const connectionHandler = new ConnectionHandler(
-        authService,
-        authorizeProfileUseCase,
-        battleLeaveUseCase,
-        battleWebsocketsRegistry,
-        timerService,
-    );
-
-    connectionHandler.registerHandler('/battle', battleHandler);
+    // const authService = new AuthService(authConfig);
+    // const timerCallbackFactoryHolder = new TimerCallbackFactoryHolder<WebSocket>();
+    // const timerService = new TimerService<TimerKey, WebSocket>(timerCallbackFactoryHolder);
+    // const cacheService = new CacheService(redisConfig);
+    // const grpcStreamService = new GrpcStreamService<engineProto.BattleRequest>();
+    //
+    // const jobService = new JobService(
+    //     jobConfig,
+    //     messageConfig,
+    //     messageProducersConfig,
+    // );
+    //
+    // const profileClinent = new ProfileClient(grpcConfig.serviceProfileUrl);
+    //
+    // const authorizeProfileUseCase = new AuthorizeProfileUseCase(
+    //     profileClinent,
+    // );
+    //
+    // const battleTimeoutUseCase = new BattleTimeoutUseCase(timerService);
+    //
+    // const battleTimeoutCallbackFactory = new BattleTimeoutCallbackFactory(
+    //     battleTimeoutUseCase,
+    // );
+    //
+    // timerCallbackFactoryHolder.factory = battleTimeoutCallbackFactory;
+    //
+    // const messageService = new MessageService(
+    //     messageConfig,
+    //     messageConsumersConfig,
+    //     // battleStartedConsumer,
+    // );
+    //
+    // const wsSocketContextStateStore = new StateStore<WebSocket, SocketContext>();
+    // const battleWsStateStore = new StateStore<Id, Set<WebSocket>>();
+    //
+    // const battleWebsocketsRegistry = new BattleWebsocketsRegistry(
+    //     wsSocketContextStateStore,
+    //     battleWsStateStore,
+    //     timerService,
+    // );
+    //
+    // const battleClient = new BattleClient(grpcConfig.serviceBattleUrl);
+    //
+    // const battleLeaveUseCase = new BattleLeaveUseCase(
+    //     battleWebsocketsRegistry,
+    //     grpcStreamService,
+    // );
+    //
+    // const battleStartUseCase = new BattleStartUseCase(
+    //     battleWebsocketsRegistry,
+    //     battleClient,
+    // );
+    // const battleMoveUseCase = new BattleMoveUseCase(
+    //     battleWebsocketsRegistry,
+    //     grpcStreamService,
+    // );
+    //
+    // const battleConnectBotUseCase = new BattleConnectBotUseCase(
+    //     jobService,
+    //     wsSocketContextStateStore,
+    //     battleWsStateStore,
+    //     messageProducersConfig.aiConnectingRequest,
+    // );
+    //
+    // const battleHandler = new BattleHandler(
+    //     timerService,
+    //     battleStartUseCase,
+    //     battleMoveUseCase,
+    //     battleConnectBotUseCase,
+    //     battleLeaveUseCase,
+    // );
+    //
+    // const connectionHandler = new ConnectionHandler(
+    //     authService,
+    //     authorizeProfileUseCase,
+    //     battleLeaveUseCase,
+    //     battleWebsocketsRegistry,
+    //     timerService,
+    // );
+    //
+    // connectionHandler.registerHandler('/battle', battleHandler);
 
     const websocketService = new WebsocketService(
-        websocketConfig,
+        websocketClientConfig,
         connectionHandler,
     );
 
-    const battleStartedUseCase = new BattleStartedUseCase;
-    const battleUpdatedUseCase = new BattleUpdatedUseCase;
-
-    const engineStream = new EngineStream(
-        grpcConfig.serviceEngineUrl,
-        battleUpdatedUseCase
-    );
-
-    grpcStreamService.stream = engineStream;
-
-    const healthUseCase = new HealthUseCase(
-        jobService,
-        messageService,
-        cacheService,
-        websocketService,
-        grpcStreamService,
-    );
-
-    const statusUseCase = new StatusUseCase();
-    const livezUseCase = new LivezUseCase();
-    const readyzUseCase = new ReadyzUseCase();
-
-    const healthHandler = new HealthHandler(
-        healthUseCase,
-        statusUseCase,
-        livezUseCase,
-        readyzUseCase,
-    );
-
-    const grpcService = new GrpcService(
-        grpcConfig.port,
-        healthHandler,
-    );
+    // const battleStartedUseCase = new BattleStartedUseCase;
+    // const battleUpdatedUseCase = new BattleUpdatedUseCase;
+    //
+    // const engineStream = new EngineStream(
+    //     grpcConfig.serviceEngineUrl,
+    //     battleUpdatedUseCase
+    // );
+    //
+    // grpcStreamService.stream = engineStream;
+    //
+    // const healthUseCase = new HealthUseCase(
+    //     jobService,
+    //     messageService,
+    //     cacheService,
+    //     websocketService,
+    //     grpcStreamService,
+    // );
+    //
+    // const statusUseCase = new StatusUseCase();
+    // const livezUseCase = new LivezUseCase();
+    // const readyzUseCase = new ReadyzUseCase();
+    //
+    // const healthHandler = new HealthHandler(
+    //     healthUseCase,
+    //     statusUseCase,
+    //     livezUseCase,
+    //     readyzUseCase,
+    // );
+    //
+    // const grpcService = new GrpcService(
+    //     grpcConfig.port,
+    //     healthHandler,
+    // );
 
 
     return new Application(
@@ -178,8 +178,6 @@ function buildApplication() {
         messageService,
         cacheService,
         websocketService,
-        grpcStreamService,
-        timerService,
     );
 }
 

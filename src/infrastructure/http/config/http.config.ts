@@ -4,14 +4,10 @@ const httpGatewayPort = Number(portStr) ?? 8080;
 const httpGateway = httpGatewayHost + ':' + httpGatewayPort;
 
 
-export const config = {
+export const httpConfig = {
     httpGatewayHost: httpGatewayHost,
     httpGatewayPort: httpGatewayPort,
     httpGateway: httpGateway,
-    accessSecret: process.env.ACCESS_SECRET ?? (() => {
-        throw new Error("ACCESS_SECRET missing");
-    })(),
-    webSocketStreaming: process.env.WEBSOCKET_STREAMING,
 };
 
 export default config;
