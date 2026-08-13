@@ -1,7 +1,7 @@
 import {createConsumer, createProducer, KafkaConfig, KafkaProducer} from "@shared/kafka-manager";
 import logger from "@shared/logger";
 import sleep from "../../utils/sleep";
-import BattleUpdatedConsumer from "./consumers/battle-updated";
+import BattleStartedConsumer from "./consumers/battle-started";
 
 export class MessageService {
 
@@ -10,7 +10,7 @@ export class MessageService {
     constructor(
         private readonly config: KafkaConfig,
         private readonly consumersConfig: Record<string, string>,
-        private readonly battleUpdatedConsumer: BattleUpdatedConsumer,
+        // private readonly battleUpdatedConsumer: BattleStartedConsumer,
     ) {
     }
 
@@ -47,10 +47,10 @@ export class MessageService {
     }
 
     private async createConsumers(): Promise<void> {
-        createConsumer(this.config, {
-            topic: this.consumersConfig.battleUpdated,
-            handler: this.battleUpdatedConsumer.execute
-        })
+        // createConsumer(this.configs, {
+        //     topic: this.consumersConfig.battleUpdated,
+        //     handler: this.battleUpdatedConsumer.execute
+        // })
     }
 
     private async retryInit(

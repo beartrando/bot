@@ -1,6 +1,6 @@
 import * as grpc from '@grpc/grpc-js';
 import {InvalidAuthorizationError} from "@shared/errors";
-import AccessToken from "../../../domain/value-objects/access-token.vo";
+import AccessToken from "../../../domain/common/value-objects/access-token.vo";
 
 export class AuthHelper {
     static getAccessToken(
@@ -15,9 +15,9 @@ export class AuthHelper {
         return new AccessToken(authHeader.slice(7));
     };
 
-    static getMetadata(jwt: string): grpc.Metadata {
+    static getMetadata(accessToken: AccessToken): grpc.Metadata {
         const metadata = new grpc.Metadata();
-        metadata.add('authorization', 'Bearer ' + jwt);
+        metadata.add('authorization', 'Bearer ' + accessToken.value);
         return metadata;
     }
 }

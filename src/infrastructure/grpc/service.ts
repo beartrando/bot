@@ -1,8 +1,7 @@
 import * as grpc from "@grpc/grpc-js";
 import * as healthProto from '../../contracts/proto/common/health';
-import * as battleProto from '../../contracts/proto/battle';
+import * as engineProto from '../../contracts/proto/engine';
 import logger from "@shared/logger";
-import BattleHandler from "./handlers/battle.handler";
 import HealthHandler from "./handlers/health.handler";
 
 export class GrpcService {
@@ -10,7 +9,6 @@ export class GrpcService {
 
     constructor(
         private readonly port: number,
-        private readonly battleHandler: BattleHandler,
         private readonly healthHandler: HealthHandler,
     ) {
         this.server = new grpc.Server();
@@ -47,14 +45,6 @@ export class GrpcService {
         this.server.forceShutdown();
     }
 
-    private registerBattleService() {
-        this.server.addService(battleProto.BattleService, {
-            get: this.battleHandler.get,
-            getActiveByProfile: this.battleHandler.getActiveByProfile,
-            start: this.battleHandler.start,
-        });
-    }
-
     private registerHealthService() {
         this.server.addService(healthProto.HealthService, {
             check: this.healthHandler.check,
@@ -65,7 +55,7 @@ export class GrpcService {
     }
 
     private addServices() {
-        this.registerBattleService();
+        // this.registerEngineService();
         this.registerHealthService();
     }
 }

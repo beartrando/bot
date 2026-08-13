@@ -1,9 +1,9 @@
 import jwt, {JwtPayload} from "jsonwebtoken";
 
-import AccessToken from "../../domain/value-objects/access-token.vo";
 
 import TokenService from "../../application/ports/token-service.port";
-import Id from "../../domain/value-objects/id.vo";
+import Id from "../../domain/common/value-objects/id.vo";
+import AccessToken from "../../domain/common/value-objects/access-token.vo";
 
 
 interface TokenPayload extends JwtPayload {
