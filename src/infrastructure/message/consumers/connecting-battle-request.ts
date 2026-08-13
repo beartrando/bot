@@ -1,11 +1,7 @@
-// import * as battleProto from "../../../contracts/proto/battle";
-// import BattleStartUseCase from "../../../application/use-cases/engine/engine-start";
-// import BattleProtoMapper from "../../grpc/mappers/engine.proto.mapper";
-// import logger from "@shared/logger";
-import {connectToBattle} from "../services/battle.service";
 import logger from "@shared/logger";
-import * as battleProto from "../grpc/generated/battle";
+import * as streamingProto from "../../../contracts/proto/streaming";
 import UseCaseInterface from "../interfaces/use-case.interface";
+import {connectToBattle} from "../services/battle.service";
 
 
 export class ConnectingBattleRequestConsumer implements UseCaseInterface<battleProto.BattleObject> {
@@ -14,7 +10,7 @@ export class ConnectingBattleRequestConsumer implements UseCaseInterface<battleP
     ) {
     }
 
-    async execute(topic: string, partition: number, message: battleProto.BattleObject): Promise<void> {
+    async execute(topic: string, partition: number, message: streamingProto.BattleJoinBot): Promise<void> {
         try {
             logger.log('message received', message);
             connectToBattle(message);
