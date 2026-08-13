@@ -12,7 +12,8 @@ export const config = {
         throw new Error("ACCESS_SECRET missing");
     })(),
     webSocketStreaming: process.env.WEBSOCKET_STREAMING,
-    deviceId: process.env.DEVICE_ID ?? 'bot-device-id',
 };
 
 export default config;
+
+

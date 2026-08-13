@@ -3,17 +3,6 @@ import logger from "@shared/logger";
 import * as streamingProto from "../grpc/generated/streaming";
 import battleClient from "../clients/battle.client";
 
-export async function connectingRequest(topic: string, partition: number, message: streamingProto.BattleStart): Promise<void> {
-    try {
-        logger.log('message received', message);
-        connectToBattle(message);
-    } catch (error) {
-        logger.error(`[Kafka] Failed to process message`, {
-            rawValue: message.battleId,
-            error,
-        });
-    }
-}
 
 
 export async function sendToStream(message: streamingProto.BattleRequest): Promise<void> {

@@ -1,6 +1,5 @@
 export const domainBattleConfig = {
-    battleTurnTimeLimit: Number(process.env.BATTLE_TURN_TIME_LIMIT) ?? 30,
-
+    deviceId: process.env.DEVICE_ID ?? 'bot-device-id',
 };
 
 export default domainBattleConfig;
