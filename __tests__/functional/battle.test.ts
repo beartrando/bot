@@ -1,8 +1,9 @@
 import DeviceId from "../../src/domain/device/value-objects/device-id.vo";
 import httpClientConfig from "../../src/infrastructure/http/configs/http.client.config";
 import HttpClient from "../../src/infrastructure/http/client";
-import AnonimousSignIn from "../../src/application/use-cases/auth/anonimous-sign-in";
+import AnonymousSignInUseCase from "../../src/application/use-cases/auth/anonimous-sign-in";
 import {fail} from "ts-proto/build/src/utils";
+import FetchProfileUseCase from "../../src/application/use-cases/profile/fetch-profile";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -21,33 +22,33 @@ describe("Gateway Service", () => {
         const gatewayClient1 = new HttpClient(httpClientConfig.host, httpClientConfig.port);
         const gatewayClient2 = new HttpClient(httpClientConfig.host, httpClientConfig.port);
 
-        const anonimousSignIn1 = new AnonimousSignIn(gatewayClient1);
-        const anonimousSignIn2 = new AnonimousSignIn(gatewayClient2);
+        const anonimousSignIn1UseCase = new AnonymousSignInUseCase(gatewayClient1);
+        const anonimousSignIn2UseCase = new AnonymousSignInUseCase(gatewayClient2);
 
-        const accessToken1 = await anonimousSignIn1.execute(deviceId1);
-        // const accessToken2 = await anonimousSignIn2.execute(deviceId2);
+        const accessToken1 = await anonimousSignIn1UseCase.execute(deviceId1);
+        const accessToken2 = await anonimousSignIn2UseCase.execute(deviceId2);
 
-        console.log(accessToken1);
+        // console.log(accessToken1);
         // console.log(accessToken2);
 
-        // if (!accessToken1 || !accessToken2) {
-        //     throw new Error("Failed to authenticate test bots");
-        // }
+        if (!accessToken1 || !accessToken2) {
+            throw new Error("Failed to authenticate test bots");
+        }
 
-        // gatewayClient1.accessToken = accessToken1;
-        // gatewayClient2.accessToken = accessToken2;
+        gatewayClient1.accessToken = accessToken1;
+        gatewayClient2.accessToken = accessToken2;
 
         //------------------------------------------------------------------------------------------------------------------
-        //
-        // // await delay(5000);
-        //
-        // const profile1 = await gatewayClient1.fetchProfile();
-        // const profile2 = await gatewayClient2.fetchProfile();
-        //
-        // expect(profile1).toBeDefined();
-        //
-        // // console.log(profile1);
-        //
+
+        const fetchProfile1UseCase = new FetchProfileUseCase(gatewayClient1);
+        const fetchProfile2UseCase = new FetchProfileUseCase(gatewayClient2);
+        const profile1 = await fetchProfile1UseCase.execute();
+        const profile2 = await fetchProfile2UseCase.execute();
+
+        expect(profile1).toBeDefined();
+
+        // console.log(profile1);
+
         // const ws1 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile1.id}`, {
         //     headers: {
         //         Authorization: `Bearer ${gatewayClient1.getAccessToken()}`,
