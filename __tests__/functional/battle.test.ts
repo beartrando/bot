@@ -6,6 +6,7 @@ import {fail} from "ts-proto/build/src/utils";
 import FetchProfileUseCase from "../../src/application/use-cases/profile/fetch-profile";
 import WebsocketClientService from "../../src/infrastructure/websocket/client.service";
 import websocketClientConfig from "../../src/infrastructure/websocket/configs/websocket-client.config";
+import WebsocketClient from "../../src/infrastructure/websocket/websocket.client";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -51,7 +52,9 @@ describe("Gateway Service", () => {
 
         // console.log(profile1);
 
-        const ws1 = new WebsocketClientService(websocketClientConfig);
+        const websocketClient1 = new WebsocketClient(accessToken1, websocketClientConfig);
+        const websocketClient2 = new WebsocketClient(accessToken2, websocketClientConfig);
+        const ws1 = new WebsocketClientService(websocketClient1);
 
         // const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile2.id}`, {
         //     headers: {
