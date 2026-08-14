@@ -5,7 +5,7 @@ import GrpcService from "../infrastructure/grpc/service";
 import AuthService from "../infrastructure/auth/service";
 import authConfig from "../infrastructure/auth/auth.config";
 import JobService from "../infrastructure/job/service";
-import jobConfig from "../infrastructure/job/job.config";
+import jobConfig from "../infrastructure/job/configs/job.config";
 import messageConfig from "../infrastructure/message/configs/message.config";
 import messageProducersConfig from "../infrastructure/message/configs/producers.config";
 import grpcConfig from "../infrastructure/grpc/configs/grpc.config";
@@ -18,6 +18,8 @@ import LivezUseCase from "../application/use-cases/health/livez";
 import ReadyzUseCase from "../application/use-cases/health/readyz";
 import HealthHandler from "../infrastructure/grpc/handlers/health.handler";
 import messageConsumersConfig from "../infrastructure/message/configs/consumers.config";
+import jobConsumersConfig from "../infrastructure/job/configs/job.consumers.config";
+import SendToStreamConsumer from "../infrastructure/job/consumers/send-to-stream.consumer";
 
 
 function buildApplication() {
@@ -37,6 +39,10 @@ function buildApplication() {
     const websocketClientService = new WebsocketClientService(
         websocketClientConfig,
     );
+
+    const sendToStreamConsumer = new SendToStreamConsumer(websocketClientService);
+
+    jobService.registerWorkers(jobConsumersConfig.websocketSendEvent, sendToStreamConsumer.execute);
 
     const healthUseCase = new HealthUseCase(
         jobService,

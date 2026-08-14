@@ -1,7 +1,4 @@
-import {WebSocketServer,} from "ws";
-import logger from "@shared/logger";
 import WebsocketClientConfig from "./types/websocket-client-config";
-import WebsocketConnectionHandlerInterface from "./interfaces/websocket-connection-handler.interface";
 
 export class WebsocketClientService {
     constructor(
@@ -15,6 +12,8 @@ export class WebsocketClientService {
     async stop(): Promise<void> {
     }
 
+    async send(message: any): Promise<void> {
+    }
     async check(): Promise<boolean> {
         return true;
     }

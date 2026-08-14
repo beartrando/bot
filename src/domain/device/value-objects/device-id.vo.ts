@@ -1,4 +1,3 @@
-
 export class DeviceId {
     constructor(
         readonly value: string,

@@ -50,6 +50,13 @@ export class JobService {
         }
     }
 
+    public async registerWorkers(topic: string, handler: (message: any) => Promise<void>): Promise<void> {
+        pgBossManager.workers.registerWorker(
+            topic,
+            handler,
+        );
+    }
+
     public async enqueue<T extends object>(
         topic: string,
         data: T,

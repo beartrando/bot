@@ -1,6 +1,3 @@
-import TimerKey from "../value-objects/timer-key.vo";
-import TimerCallbackInterface from "./timer-callback.interface";
-
 export interface TimerServiceInterface<KEntity, TEntity> {
     start(
         key: KEntity,
