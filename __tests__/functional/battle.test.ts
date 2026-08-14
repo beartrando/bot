@@ -4,6 +4,8 @@ import HttpClient from "../../src/infrastructure/http/client";
 import AnonymousSignInUseCase from "../../src/application/use-cases/auth/anonimous-sign-in";
 import {fail} from "ts-proto/build/src/utils";
 import FetchProfileUseCase from "../../src/application/use-cases/profile/fetch-profile";
+import WebsocketClientService from "../../src/infrastructure/websocket/client.service";
+import websocketClientConfig from "../../src/infrastructure/websocket/configs/websocket-client.config";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -49,12 +51,8 @@ describe("Gateway Service", () => {
 
         // console.log(profile1);
 
-        // const ws1 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile1.id}`, {
-        //     headers: {
-        //         Authorization: `Bearer ${gatewayClient1.getAccessToken()}`,
-        //     },
-        // });
-        //
+        const ws1 = new WebsocketClientService(websocketClientConfig);
+
         // const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile2.id}`, {
         //     headers: {
         //         Authorization: `Bearer ${gatewayClient2.getAccessToken()}`,

@@ -1,7 +1,7 @@
 import ProfileId from "./value-objects/profile-id.vo";
 
 export type ProfileEntityProps = {
-    id?: ProfileId;
+    id: ProfileId;
 };
 
 export class ProfileEntity {
