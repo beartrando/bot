@@ -12,7 +12,7 @@ export class ProfileEntity {
 
     static create(props: ProfileEntityProps): ProfileEntity {
         return new ProfileEntity(
-            props.id ?? Id.create(),
+            props.id,
         );
     }
 }
