@@ -11,7 +11,11 @@ export class HttpServerService {
     private readonly app: Express;
     private server?: Server;
 
-    constructor(private readonly httpPort: number, private readonly gatewayRouter: GatewayRouter, private readonly proxyController: ProxyController) {
+    constructor(
+        private readonly httpPort: number,
+        private readonly gatewayRouter: GatewayRouter,
+        private readonly proxyController: ProxyController
+    ) {
 
         this.app = express();
         this.app.use(express.json());

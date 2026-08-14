@@ -20,6 +20,8 @@ import HealthHandler from "../infrastructure/grpc/handlers/health.handler";
 import messageConsumersConfig from "../infrastructure/message/configs/consumers.config";
 import jobConsumersConfig from "../infrastructure/job/configs/job.consumers.config";
 import SendToStreamConsumer from "../infrastructure/job/consumers/send-to-stream.consumer";
+import HttpClient from "../infrastructure/http/client";
+import httpClientConfig from "../infrastructure/http/configs/http.client.config";
 
 
 function buildApplication() {
@@ -64,6 +66,11 @@ function buildApplication() {
     const grpcService = new GrpcService(
         grpcConfig.port,
         healthHandler,
+    );
+
+    const httpService = new HttpClient(
+        httpClientConfig.host,
+        httpClientConfig.port,
     );
 
     return new Application(
