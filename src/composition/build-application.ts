@@ -44,7 +44,10 @@ function buildApplication() {
 
     const sendToStreamConsumer = new SendToStreamConsumer(websocketClientService);
 
-    jobService.registerWorkers(jobConsumersConfig.websocketSendEvent, sendToStreamConsumer.execute);
+    jobService.registerWorkers(
+        jobConsumersConfig.websocketSendEvent,
+        sendToStreamConsumer.execute.bind(sendToStreamConsumer)
+    );
 
     const healthUseCase = new HealthUseCase(
         jobService,
