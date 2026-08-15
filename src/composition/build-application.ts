@@ -22,10 +22,29 @@ import jobConsumersConfig from "../infrastructure/job/configs/job.consumers.conf
 import SendToStreamConsumer from "../infrastructure/job/consumers/send-to-stream.consumer";
 import HttpClient from "../infrastructure/http/client";
 import httpClientConfig from "../infrastructure/http/configs/http.client.config";
+import WebsocketClient from "../infrastructure/websocket/websocket.client";
+import ProfileService from "../infrastructure/profile/service";
+import BattleHandler from "../infrastructure/websocket/handlers/battle.handler";
+import BattleMoveUseCase from "../application/use-cases/battle/battle-move";
+import AnonymousSignInUseCase from "../application/use-cases/auth/anonimous-sign-in";
+import DeviceId from "../domain/device/value-objects/device-id.vo";
+import domainBattleConfig from "../domain/device/config/config";
+import FetchProfileUseCase from "../application/use-cases/profile/fetch-profile";
 
 
 function buildApplication() {
-    const authService = new AuthService(authConfig);
+
+
+    const httpService = new HttpClient(
+        httpClientConfig.host,
+        httpClientConfig.port,
+    );
+
+    const deviceId = new DeviceId(domainBattleConfig.deviceId);
+    const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
+    const authService = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
+    const fetchProfileUseCase = new FetchProfileUseCase(httpService);
+    const profileService = new ProfileService(authService, fetchProfileUseCase);
 
     const jobService = new JobService(
         jobConfig,
@@ -38,8 +57,18 @@ function buildApplication() {
         messageConsumersConfig,
     );
 
-    const websocketClientService = new WebsocketClientService(
+    const battleMoveUseCase = new BattleMoveUseCase();
+    const battleHandler = new BattleHandler(battleMoveUseCase);
+
+    const websocketClient = new WebsocketClient(
+        authService,
+        profileService,
         websocketClientConfig,
+        battleHandler
+    );
+
+    const websocketClientService = new WebsocketClientService(
+        websocketClient,
     );
 
     const sendToStreamConsumer = new SendToStreamConsumer(websocketClientService);
@@ -69,11 +98,6 @@ function buildApplication() {
     const grpcService = new GrpcService(
         grpcConfig.port,
         healthHandler,
-    );
-
-    const httpService = new HttpClient(
-        httpClientConfig.host,
-        httpClientConfig.port,
     );
 
     return new Application(

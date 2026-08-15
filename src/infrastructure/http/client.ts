@@ -1,10 +1,8 @@
 import http from "node:http";
 import logger from "@shared/logger";
-import AccessToken from "../../domain/common/value-objects/access-token.vo";
+import RequestOptionsInterface from "./interfaces/request-options.interface";
 
 export class HttpClient {
-
-    private _accessToken: AccessToken | null = null;
 
     constructor(
         private readonly host: string,
@@ -12,59 +10,41 @@ export class HttpClient {
     ) {
     }
 
-    get accessToken(): AccessToken | null {
-        return this._accessToken;
+    public async get(uri: string, requestOptions?: RequestOptionsInterface): Promise<any> {
+        return await this.request(uri, 'GET', requestOptions);
     }
 
-    set accessToken(accessToken: AccessToken) {
-        this._accessToken = accessToken;
+    public async post(uri: string, requestOptions?: RequestOptionsInterface): Promise<any> {
+        return await this.request(uri, 'POST', requestOptions);
     }
 
-    public async get(uri: string, request?: object): Promise<any> {
-        return await this.request(uri, request, 'GET');
+    public async delete(uri: string, requestOptions?: RequestOptionsInterface): Promise<any> {
+        return await this.request(uri, 'DELETE', requestOptions);
     }
 
-    public async post(uri: string, request?: object): Promise<any> {
-        return await this.request(uri, request, 'POST');
+    public async put(uri: string, requestOptions?: RequestOptionsInterface): Promise<any> {
+        return await this.request(uri, 'PUT', requestOptions);
     }
 
-    public async delete(uri: string, request?: object): Promise<any> {
-        return await this.request(uri, request, 'DELETE');
-    }
-
-    public async put(uri: string, request?: object): Promise<any> {
-        return await this.request(uri, request, 'PUT');
-    }
-
-    public async patch(uri: string, request?: object): Promise<any> {
-        return await this.request(uri, request, 'PATCH');
+    public async patch(uri: string, requestOptions?: RequestOptionsInterface): Promise<any> {
+        return await this.request(uri, 'PATCH', requestOptions);
     }
 
     private async request(
         uri: string,
-        request?: object,
-        method: string = "GET"
+        method: string = "GET",
+        requestOptions?: RequestOptionsInterface,
     ): Promise<any> {
         return new Promise((resolve, reject) => {
-            // logger.info(
-            //   uri,
-            //   request,
-            //   method,
-            // );
-
             const headers: Record<string, string | number> = {
                 "Content-Type": "application/json",
+                ...requestOptions?.headers,
             };
 
             let data = '';
-            if (request) {
-                data = JSON.stringify(request);
+            if (requestOptions?.request) {
+                data = JSON.stringify(requestOptions.request);
                 headers["Content-Length"] = Buffer.byteLength(data);
-
-            }
-
-            if (this._accessToken) {
-                headers["Authorization"] = "Bearer " + this._accessToken.value;
             }
 
             const options = {
@@ -99,7 +79,7 @@ export class HttpClient {
                 }
             });
 
-            if (request) {
+            if (requestOptions?.request) {
                 req.write(data);
             }
             req.end();

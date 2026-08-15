@@ -1,66 +1,23 @@
 import WebSocket from "ws";
-import config from "../configs/configs";
-import * as streamingProto from "../grpc/generated/streaming";
+import * as streamingProto from "../../contracts/proto/streaming";
 import logger from "@shared/logger";
-import * as battleService from "../services/battle.service";
-import AccessToken from "../../domain/common/value-objects/access-token.vo";
 import WebsocketClientConfig from "./types/websocket-client-config";
+import WebsocketClientHandlerInterface from "./interfaces/websocket-client-handler.interface";
+import AuthService from "../auth/service";
+import ProfileService from "../profile/service";
 
 class WebsocketClient {
-    // private auth: authProto.AuthObject | null = null;
-    // private profile: profileProto.ProfileObject | null = null;
-    // private ws: WebSocket | null = null;
-    // private reconnectAttempts = 0;
-    // private reconnectFn: NodeJS.Timeout | null = null;
-
+    private ws: WebSocket | null = null;
+    private reconnectAttempts = 0;
+    private reconnectFn: NodeJS.Timeout | null = null;
 
     constructor(
-        private readonly accessToken: AccessToken,
-        private readonly config: WebsocketClientConfig,
+        private readonly authService: AuthService,
+        private readonly profileService: ProfileService,
+        private readonly websocketClientConfig: WebsocketClientConfig,
+        private readonly websocketClientHandler: WebsocketClientHandlerInterface,
     ) {
     }
-
-    // async getAuth(): Promise<authProto.AuthObject> {
-    //     if (this.auth) {
-    //         // logger.info('this.auth', this.auth);
-    //         return this.auth;
-    //     }
-    //     try {
-    //         const response = await gatewayClient.signIn(config.deviceId);
-    //         logger.log(response);
-    //         if (!response || (response as any).error || !response.auth) {
-    //             logger.error("❌ Auth failed:", response);
-    //             this.auth = null;
-    //             throw new Error("Auth failed");
-    //         }
-    //         this.auth = response.auth as authProto.AuthObject;
-    //         return this.auth;
-    //     } catch (err) {
-    //         logger.error("❌ Auth error:", err);
-    //         this.auth = null;
-    //         throw err; // ошибка всплывает, но процесс не падает
-    //     }
-    // }
-    //
-    // async getProfile(): Promise<profileProto.ProfileObject> {
-    //     if (this.profile) return this.profile;
-    //     try {
-    //         const response = await gatewayClient.fetchProfile();
-    //
-    //         if (!response || (response as any).error || !response.profile) {
-    //             logger.error("❌ Profile failed:", response);
-    //             this.auth = null;
-    //             throw new Error("Profile failed");
-    //         }
-    //         this.profile = response.profile as profileProto.ProfileObject;
-    //
-    //         return this.profile;
-    //     } catch (err) {
-    //         logger.error("❌ Profile error:", err);
-    //         this.profile = null;
-    //         throw err; // ошибка всплывает, но процесс не падает
-    //     }
-    // }
 
     async getWs(): Promise<WebSocket | null> {
         if (
@@ -78,18 +35,19 @@ class WebsocketClient {
         return null;
     }
 
-    check(): boolean {
-        return !!this.ws;
+    isConnected(): boolean {
+        return this.ws?.readyState === WebSocket.OPEN;
     }
 
     async connect(): Promise<WebSocket | null> {
-        const auth = await this.getAuth();
-        const profile = await this.getProfile();
-
+        const accessToken = this.authService.accessToken;
+        const profileEntity = await this.profileService.fetchProfile();
+        const profileId = profileEntity.id;
+        const url = `ws://${this.websocketClientConfig.sererUrl}/battle?token=${accessToken.value}&profileId=${profileId.value}`
         // logger.log(`ws://${app.webSocketStreaming}/engine?token=${auth.accessToken}&profileId=${profile.id}`);
-        this.ws = new WebSocket(`ws://${config.webSocketStreaming}/battle?token=${auth.accessToken}&profileId=${profile.id}`);
+        this.ws = new WebSocket(url);
 
-        this.ws.on("message", this.messageHandler);
+        this.ws.on("message", (message: any) => this.websocketClientHandler.handle(message));
         this.ws.on("open", this.openHandler);
         this.ws.on("error", this.errorHandler);
         this.ws.on("close", this.closeHandler);
@@ -105,8 +63,6 @@ class WebsocketClient {
             this.ws.removeAllListeners();
             this.ws = null;
         }
-        this.auth = null;
-        this.profile = null;
         this.cancelReconnect(reconnectAttempts);
     }
 
@@ -135,17 +91,6 @@ class WebsocketClient {
             clearTimeout(this.reconnectFn);
         }
         this.reconnectFn = null;
-    }
-
-    private messageHandler = (data: WebSocket.RawData) => {
-        try {
-            const buffer = new Uint8Array(data as ArrayBuffer);
-            const message = streamingProto.BattleResponse.decode(buffer);
-            logger.log("📩 Got response:", message);
-            battleService.battleMessageHandler(message);
-        } catch (err) {
-            logger.error("❌ Failed to parse message:", err);
-        }
     }
 
     private errorHandler = (err: unknown) => {

@@ -2,11 +2,13 @@ import DeviceId from "../../src/domain/device/value-objects/device-id.vo";
 import httpClientConfig from "../../src/infrastructure/http/configs/http.client.config";
 import HttpClient from "../../src/infrastructure/http/client";
 import AnonymousSignInUseCase from "../../src/application/use-cases/auth/anonimous-sign-in";
-import {fail} from "ts-proto/build/src/utils";
 import FetchProfileUseCase from "../../src/application/use-cases/profile/fetch-profile";
 import WebsocketClientService from "../../src/infrastructure/websocket/client.service";
 import websocketClientConfig from "../../src/infrastructure/websocket/configs/websocket-client.config";
 import WebsocketClient from "../../src/infrastructure/websocket/websocket.client";
+import BattleHandler from "../../src/infrastructure/websocket/handlers/battle.handler";
+import {BattleMoveUseCase} from "../../src/application/use-cases/battle/battle-move";
+import AuthService from "../../src/infrastructure/auth/service";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -22,11 +24,12 @@ describe("Gateway Service", () => {
         // console.log(deviceId1);
         // console.log(deviceId2);
 
-        const gatewayClient1 = new HttpClient(httpClientConfig.host, httpClientConfig.port);
-        const gatewayClient2 = new HttpClient(httpClientConfig.host, httpClientConfig.port);
+        const gatewayClient = new HttpClient(httpClientConfig.host, httpClientConfig.port);
+        const authService1 = new AuthService(deviceId1);
+        const authService2 = new AuthService(deviceId2);
 
-        const anonimousSignIn1UseCase = new AnonymousSignInUseCase(gatewayClient1);
-        const anonimousSignIn2UseCase = new AnonymousSignInUseCase(gatewayClient2);
+        const anonimousSignIn1UseCase = new AnonymousSignInUseCase();
+        const anonimousSignIn2UseCase = new AnonymousSignInUseCase();
 
         const accessToken1 = await anonimousSignIn1UseCase.execute(deviceId1);
         const accessToken2 = await anonimousSignIn2UseCase.execute(deviceId2);
@@ -48,13 +51,32 @@ describe("Gateway Service", () => {
         const profile1 = await fetchProfile1UseCase.execute();
         const profile2 = await fetchProfile2UseCase.execute();
 
+        if (!profile1 || !profile2) {
+            throw new Error("Failed to authenticate test bots");
+        }
+
         expect(profile1).toBeDefined();
 
         // console.log(profile1);
-
-        const websocketClient1 = new WebsocketClient(accessToken1, websocketClientConfig);
-        const websocketClient2 = new WebsocketClient(accessToken2, websocketClientConfig);
+        const battleMoveUseCaae = new BattleMoveUseCase();
+        const battleHandler = new BattleHandler(battleMoveUseCaae);
+        const websocketClient1 = new WebsocketClient(
+            accessToken1,
+            profile1.id,
+            websocketClientConfig,
+            battleHandler
+        );
+        const websocketClient2 = new WebsocketClient(
+            accessToken2,
+            profile2.id,
+            websocketClientConfig,
+            battleHandler
+        );
         const ws1 = new WebsocketClientService(websocketClient1);
+        const ws2 = new WebsocketClientService(websocketClient2);
+
+        // ws1->start();
+        // ws2->start();
 
         // const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile2.id}`, {
         //     headers: {
