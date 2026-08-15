@@ -8,9 +8,9 @@ export class ConnectToBattleUseCase {
     }
 
     async execute(battleId: BattleId): Promise<void> {
-        this.jobService.enqueue();
+        // this.jobService.enqueue();
     }
 }
 
-export default HealthUseCase;
+export default ConnectToBattleUseCase;
 

@@ -1,4 +1,4 @@
-import AccessToken from "../../domain/common/value-objects/access-token.vo";
+import AccessToken from "../../domain/auth/value-objects/access-token.vo";
 import Id from "../../domain/common/value-objects/id.vo";
 
 export interface TokenService {

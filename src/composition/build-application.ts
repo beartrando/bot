@@ -79,6 +79,7 @@ function buildApplication() {
     );
 
     const healthUseCase = new HealthUseCase(
+        authService,
         jobService,
         messageService,
         websocketClientService,
@@ -101,6 +102,7 @@ function buildApplication() {
     );
 
     return new Application(
+        authService,
         grpcService,
         jobService,
         messageService,

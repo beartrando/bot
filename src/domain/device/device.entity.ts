@@ -1,4 +1,5 @@
 import DeviceId from "./value-objects/device-id.vo";
+import Id from "../common/value-objects/id.vo";
 
 export type BattleEntityProps = {
     id?: DeviceId;

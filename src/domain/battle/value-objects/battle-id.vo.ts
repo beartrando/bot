@@ -7,7 +7,7 @@ export class BattleId {
         }
     }
 
-    equals(other: Id): boolean {
+    equals(other: BattleId): boolean {
         return this.value === other.value;
     }
 

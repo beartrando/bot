@@ -1,8 +1,4 @@
-import BattleEntity from "../../../domain/battle/battle.entity";
-
-export const stateStoreConfig = {
-    battle: {} as BattleEntity,
-} as const;
+export const stateStoreConfig = {} as const;
 
 export type StateStoreKey = keyof typeof stateStoreConfig;
 

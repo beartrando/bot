@@ -2,21 +2,21 @@ import * as healthProto from "../../../contracts/proto/common/health";
 import MessageService from "../../../infrastructure/message/service";
 import JobService from "../../../infrastructure/job/service";
 import appConfig from "../../../infrastructure/app/app.config";
-// import StateStoreService from "../../../infrastructure/state-store/service";
 import WebsocketClientService from "../../../infrastructure/websocket/client.service";
+import AuthService from "../../../infrastructure/auth/service";
 
 export class HealthUseCase {
     constructor(
+        private readonly authService: AuthService,
         private readonly jobService: JobService,
         private readonly messageService: MessageService,
-        // private readonly cacheService: CacheService,
         private readonly websocketClientService: WebsocketClientService,
-        // private readonly engineStreamService: GrpcStreamService<engineProto.BattleRequest>,
     ) {
     }
 
     async execute(): Promise<healthProto.HealthReport> {
-        const [jobServiceOk, messageServiceOk, websocketClientServiceOk,] = await Promise.all([
+        const [authOk, jobServiceOk, messageServiceOk, websocketClientServiceOk,] = await Promise.all([
+            this.authService.check(),
             this.jobService.check(),
             this.messageService.check(),
             this.websocketClientService.check(),
@@ -24,6 +24,7 @@ export class HealthUseCase {
 
 
         const components = {
+            auth: authOk,
             job: jobServiceOk,
             message: messageServiceOk,
             websocketClient: websocketClientServiceOk,
