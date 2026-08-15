@@ -43,7 +43,7 @@ function buildApplication() {
     const deviceId = new DeviceId(domainBattleConfig.deviceId);
     const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
     const authService = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
-    const fetchProfileUseCase = new FetchProfileUseCase(httpService);
+    const fetchProfileUseCase = new FetchProfileUseCase(authService, httpService);
     const profileService = new ProfileService(authService, fetchProfileUseCase);
 
     const jobService = new JobService(

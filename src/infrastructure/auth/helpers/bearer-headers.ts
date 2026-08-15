@@ -1,4 +1,4 @@
-import AccessToken from "../../../domain/common/value-objects/access-token.vo";
+import AccessToken from "../../../domain/auth/value-objects/access-token.vo";
 
 export function bearerHeaders(token: AccessToken): Record<string, string> {
     return {

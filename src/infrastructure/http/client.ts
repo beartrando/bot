@@ -42,8 +42,8 @@ export class HttpClient {
             };
 
             let data = '';
-            if (requestOptions?.request) {
-                data = JSON.stringify(requestOptions.request);
+            if (requestOptions?.body) {
+                data = JSON.stringify(requestOptions.body);
                 headers["Content-Length"] = Buffer.byteLength(data);
             }
 
@@ -79,7 +79,7 @@ export class HttpClient {
                 }
             });
 
-            if (requestOptions?.request) {
+            if (data) {
                 req.write(data);
             }
             req.end();

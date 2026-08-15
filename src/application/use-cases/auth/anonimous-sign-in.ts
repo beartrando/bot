@@ -1,6 +1,8 @@
 import HttpClient from "../../../infrastructure/http/client";
 import DeviceId from "../../../domain/device/value-objects/device-id.vo";
-import AccessToken from "../../../domain/common/value-objects/access-token.vo";
+import AuthObject from "../../../domain/auth/value-objects/auth-object.vo";
+import AccessToken from "../../../domain/auth/value-objects/access-token.vo";
+import RefreshToken from "../../../domain/auth/value-objects/refresh-token.vo";
 
 export class AnonymousSignInUseCase {
     constructor(
@@ -8,12 +10,16 @@ export class AnonymousSignInUseCase {
     ) {
     }
 
-    async execute(deviceId: DeviceId): Promise<AccessToken | null> {
+    async execute(deviceId: DeviceId): Promise<AuthObject> {
         // logger.info('signIn', deviceId);
-        const resp = await this.httpClient.post("auth/anonymousSignIn", {deviceId: deviceId.value});
+        const resp = await this.httpClient.post("auth/anonymousSignIn", {body: {deviceId: deviceId.value}});
         // logger.info('signIn', resp);
 
-        return resp?.auth ? new AccessToken(resp.auth.accessToken) : null;
+        if (!resp?.auth) {
+            throw new Error("Not authenticated");
+        }
+
+        return new AuthObject(new AccessToken(resp?.auth.accessToken), new RefreshToken(resp?.auth.refreshToken));
     }
 }
 

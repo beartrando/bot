@@ -1,4 +1,4 @@
-import {WebSocket,} from "ws";
+import {RawData} from "ws";
 import * as streamingProto from "../../../contracts/proto/streaming";
 
 import logger from "@shared/logger";
@@ -11,7 +11,7 @@ export class BattleHandler implements WebsocketClientHandlerInterface {
     ) {
     }
 
-    async handle(data: WebSocket.RawData): Promise<void> {
+    async handle(data: RawData): Promise<void> {
         try {
             const buffer = new Uint8Array(data as ArrayBuffer);
             const message = streamingProto.BattleResponse.decode(buffer);

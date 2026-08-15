@@ -1,5 +1,5 @@
 interface RequestOptionsInterface {
-    request?: object;
+    body?: object;
     headers?: Record<string, string | number>;
 }
 
