@@ -5,6 +5,10 @@ export class BattleId {
         if (!value) {
             throw new Error("BattleId cannot be empty");
         }
+
+        if (/\s/.test(value)) {
+            throw new Error("BattleId cannot contain whitespace");
+        }
     }
 
     equals(other: BattleId): boolean {

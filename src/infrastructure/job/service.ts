@@ -1,4 +1,4 @@
-import type {PgBossConfig} from "@shared/pg-boss-manager";
+import type {PgBossConfig, WorkerHandler} from "@shared/pg-boss-manager";
 import pgBossManager, {SqlExecutor} from '@shared/pg-boss-manager';
 import logger from "@shared/logger";
 import sleep from "../../utils/sleep";
@@ -6,6 +6,7 @@ import {KafkaConfig} from "@shared/kafka-manager";
 
 
 export class JobService {
+    private readonly workers = new Map<string, WorkerHandler<any>>();
 
     constructor(
         private readonly config: PgBossConfig,
@@ -19,6 +20,8 @@ export class JobService {
         void pgBossManager.start(this.config);
 
         await pgBossManager.waitUntilReady();
+
+        this.registerWorkers();
 
         await this.initKafkaBridge();
     }
@@ -50,10 +53,23 @@ export class JobService {
         }
     }
 
-    public async registerWorkers(topic: string, handler: (message: any) => Promise<void>): Promise<void> {
-        pgBossManager.workers.registerWorker(
-            topic,
-            handler,
+    public registerWorker(
+        topic: string,
+        handler: WorkerHandler<any>,
+    ): void {
+        this.workers.set(topic, handler);
+    }
+
+    private registerWorkers(): void {
+        for (const [topic, handler] of this.workers) {
+            pgBossManager.workers.registerWorker(
+                topic,
+                handler,
+            );
+        }
+
+        logger.info(
+            `✅ Registered ${this.workers.size} workers`,
         );
     }
 

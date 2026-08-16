@@ -43,7 +43,7 @@ function buildApplication() {
     const deviceId = new DeviceId(domainBattleConfig.deviceId);
     const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
     const authService = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
-    const fetchProfileUseCase = new FetchProfileUseCase(authService, httpService);
+    const fetchProfileUseCase = new FetchProfileUseCase(httpService);
     const profileService = new ProfileService(authService, fetchProfileUseCase);
 
     const jobService = new JobService(
@@ -73,7 +73,7 @@ function buildApplication() {
 
     const sendToStreamConsumer = new SendToStreamConsumer(websocketClientService);
 
-    jobService.registerWorkers(
+    jobService.registerWorker(
         jobConsumersConfig.websocketSendEvent,
         sendToStreamConsumer.execute.bind(sendToStreamConsumer)
     );

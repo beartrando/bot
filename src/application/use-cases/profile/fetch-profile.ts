@@ -6,13 +6,12 @@ import AuthService from "../../../infrastructure/auth/service";
 
 export class FetchProfileUseCase {
     constructor(
-        private readonly authService: AuthService,
         private readonly httpClient: HttpClient,
     ) {
     }
 
     async execute(accessToken: AccessToken): Promise<ProfileEntity | null> {
-        const headers = bearerHeaders(this.authService.accessToken);
+        const headers = bearerHeaders(accessToken);
         const resp = await this.httpClient.get("profile/getMe", {headers});
         return resp?.profile ? ProfileEntity.create(resp?.profile) : null;
     }

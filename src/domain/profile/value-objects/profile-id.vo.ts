@@ -5,6 +5,10 @@ export class ProfileId {
         if (!value) {
             throw new Error("ProfileId cannot be empty");
         }
+
+        if (/\s/.test(value)) {
+            throw new Error("ProfileId cannot contain whitespace");
+        }
     }
 
     equals(other: ProfileId): boolean {

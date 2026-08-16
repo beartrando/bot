@@ -9,6 +9,9 @@ import WebsocketClient from "../../src/infrastructure/websocket/websocket.client
 import BattleHandler from "../../src/infrastructure/websocket/handlers/battle.handler";
 import {BattleMoveUseCase} from "../../src/application/use-cases/battle/battle-move";
 import AuthService from "../../src/infrastructure/auth/service";
+import domainBattleConfig from "../../src/domain/device/config/config";
+import authConfig from "../../src/infrastructure/auth/auth.config";
+import ProfileService from "../../src/infrastructure/profile/service";
 
 function delay(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -24,15 +27,21 @@ describe("Gateway Service", () => {
         // console.log(deviceId1);
         // console.log(deviceId2);
 
-        const gatewayClient = new HttpClient(httpClientConfig.host, httpClientConfig.port);
-        const authService1 = new AuthService(deviceId1);
-        const authService2 = new AuthService(deviceId2);
+        const httpService = new HttpClient(
+            httpClientConfig.host,
+            httpClientConfig.port,
+        );
 
-        const anonimousSignIn1UseCase = new AnonymousSignInUseCase();
-        const anonimousSignIn2UseCase = new AnonymousSignInUseCase();
+        const deviceId = new DeviceId(domainBattleConfig.deviceId);
+        const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
+        const authService1 = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
+        const authService2 = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
 
-        const accessToken1 = await anonimousSignIn1UseCase.execute(deviceId1);
-        const accessToken2 = await anonimousSignIn2UseCase.execute(deviceId2);
+        await authService1.start();
+        await authService2.start();
+
+        const accessToken1 = authService1.accessToken;
+        const accessToken2 = authService2.accessToken;
 
         // console.log(accessToken1);
         // console.log(accessToken2);
@@ -41,42 +50,34 @@ describe("Gateway Service", () => {
             throw new Error("Failed to authenticate test bots");
         }
 
-        gatewayClient1.accessToken = accessToken1;
-        gatewayClient2.accessToken = accessToken2;
+        const fetchProfileUseCase = new FetchProfileUseCase(httpService);
+        const profileService1 = new ProfileService(authService1, fetchProfileUseCase);
+        const profileService2 = new ProfileService(authService2, fetchProfileUseCase);
 
-        //------------------------------------------------------------------------------------------------------------------
+        const battleMoveUseCase = new BattleMoveUseCase();
+        const battleHandler = new BattleHandler(battleMoveUseCase);
 
-        const fetchProfile1UseCase = new FetchProfileUseCase(gatewayClient1);
-        const fetchProfile2UseCase = new FetchProfileUseCase(gatewayClient2);
-        const profile1 = await fetchProfile1UseCase.execute();
-        const profile2 = await fetchProfile2UseCase.execute();
-
-        if (!profile1 || !profile2) {
-            throw new Error("Failed to authenticate test bots");
-        }
-
-        expect(profile1).toBeDefined();
-
-        // console.log(profile1);
-        const battleMoveUseCaae = new BattleMoveUseCase();
-        const battleHandler = new BattleHandler(battleMoveUseCaae);
         const websocketClient1 = new WebsocketClient(
-            accessToken1,
-            profile1.id,
+            authService1,
+            profileService1,
             websocketClientConfig,
             battleHandler
         );
-        const websocketClient2 = new WebsocketClient(
-            accessToken2,
-            profile2.id,
-            websocketClientConfig,
-            battleHandler
-        );
-        const ws1 = new WebsocketClientService(websocketClient1);
-        const ws2 = new WebsocketClientService(websocketClient2);
 
-        // ws1->start();
-        // ws2->start();
+        const websocketClient2 = new WebsocketClient(
+            authService2,
+            profileService2,
+            websocketClientConfig,
+            battleHandler
+        );
+
+        const websocketService1 = new WebsocketClientService(websocketClient1);
+        const websocketService2 = new WebsocketClientService(websocketClient2);
+
+        // await websocketService1.start();
+        // await websocketService2.start();
+
+
 
         // const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile2.id}`, {
         //     headers: {
