@@ -74,7 +74,7 @@ describe("Gateway Service", () => {
         const websocketService1 = new WebsocketClientService(websocketClient1);
         const websocketService2 = new WebsocketClientService(websocketClient2);
 
-        // await websocketService1.start();
+        await websocketService1.start();
         // await websocketService2.start();
 
 

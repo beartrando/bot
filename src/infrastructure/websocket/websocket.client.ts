@@ -39,23 +39,36 @@ class WebsocketClient {
         return this.ws?.readyState === WebSocket.OPEN;
     }
 
-    async connect(): Promise<WebSocket | null> {
+    async connect(): Promise<WebSocket> {
         const accessToken = this.authService.accessToken;
         const profileEntity = await this.profileService.fetchProfile();
         const profileId = profileEntity.id;
-        const url = `ws://${this.websocketClientConfig.sererUrl}/battle?token=${accessToken.value}&profileId=${profileId.value}`
-        // logger.log(`ws://${app.webSocketStreaming}/engine?token=${auth.accessToken}&profileId=${profile.id}`);
-        this.ws = new WebSocket(url);
 
-        this.ws.on("message", (message: any) => this.websocketClientHandler.handle(message));
-        this.ws.on("open", this.openHandler);
-        this.ws.on("error", this.errorHandler);
-        this.ws.on("close", this.closeHandler);
+        const url = `ws://${this.websocketClientConfig.sererUrl}/battle?token=${accessToken.value}&profileId=${profileId.value}`;
 
-        logger.info("Battle stream was created",);
-        return this.ws;
+        return new Promise((resolve, reject) => {
+            this.ws = new WebSocket(url);
+
+            this.ws.on("message", (message: any) =>
+                this.websocketClientHandler.handle(message)
+            );
+
+            this.ws.on("open", () => {
+                // logger.info("Battle stream was connected");
+                if (!this.ws) {
+                    reject(error);
+                }
+                resolve(this.ws);
+            });
+
+            this.ws.on("error", (error) => {
+                this.errorHandler(error);
+                reject(error);
+            });
+
+            this.ws.on("close", this.closeHandler);
+        });
     }
-
 
     disconnect(reconnectAttempts = this.reconnectAttempts) {
         if (this.ws) {
