@@ -55,10 +55,7 @@ class WebsocketClient {
 
             this.ws.on("open", () => {
                 // logger.info("Battle stream was connected");
-                if (!this.ws) {
-                    reject(error);
-                }
-                resolve(this.ws);
+                resolve(this.ws!);
             });
 
             this.ws.on("error", (error) => {

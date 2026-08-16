@@ -75,17 +75,13 @@ describe("Gateway Service", () => {
         const websocketService2 = new WebsocketClientService(websocketClient2);
 
         await websocketService1.start();
-        // await websocketService2.start();
+        await websocketService2.start();
 
 
 
-        // const ws2 = new WebSocket(`ws://${config.webSocketStreaming}/battle?profileId=${profile2.id}`, {
-        //     headers: {
-        //         Authorization: `Bearer ${gatewayClient2.getAccessToken()}`,
-        //     },
-        // });
-        //
-        //
+        await websocketService1.stop();
+        await websocketService2.stop();
+
         // const start = new Promise<void>(async (resolve) => {
         //     let counter = 0;
         //     const gameplay = async (battleObject?: battleProto.BattleObject | null) => {
