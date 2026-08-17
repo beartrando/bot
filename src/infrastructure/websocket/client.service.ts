@@ -1,4 +1,5 @@
 import WebsocketClient from "./websocket.client";
+import WebSocket from "ws";
 
 export class WebsocketClientService {
     constructor(
@@ -12,6 +13,15 @@ export class WebsocketClientService {
 
     async stop(): Promise<void> {
         await this.websocketClient.disconnect(0);
+    }
+
+    async getConnection(): Promise<WebSocket> {
+        const ws = await this.websocketClient.getWs();
+        if (!ws) {
+            throw new Error("WebSocket is not connected");
+        }
+
+        return ws;
     }
 
     async send(message: any): Promise<void> {

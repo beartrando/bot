@@ -7,15 +7,103 @@ import WebsocketClientService from "../../src/infrastructure/websocket/client.se
 import websocketClientConfig from "../../src/infrastructure/websocket/configs/websocket-client.config";
 import WebsocketClient from "../../src/infrastructure/websocket/websocket.client";
 import BattleHandler from "../../src/infrastructure/websocket/handlers/battle.handler";
-import {BattleMoveUseCase} from "../../src/application/use-cases/battle/battle-move";
 import AuthService from "../../src/infrastructure/auth/service";
 import domainBattleConfig from "../../src/domain/device/config/config";
 import authConfig from "../../src/infrastructure/auth/auth.config";
 import ProfileService from "../../src/infrastructure/profile/service";
+import * as streamingProto from "../../src/contracts/proto/streaming";
 
-function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+
+class BattleMoveUseCase {
+    private counter = 0;
+
+    private resolve!: () => void;
+
+    private readonly executed = new Promise<void>((resolve) => {
+        this.resolve = resolve;
+    });
+
+    async execute(message: streamingProto.BattleResponse): Promise<void> {
+        console.log(message);
+
+        // const gameplay = async (battleObject?: battleProto.BattleObject | null) => {
+        //     console.log(battleObject);
+        //
+        //     // console.log('=====================================================================step ', counter);
+        //     //         if (!battleObject) {
+        //     //             const req = streamingProto.BattleRequest.create({start: {}});
+        //     //             const buffer = streamingProto.BattleRequest.encode(req).finish();
+        //     //             ws1.send(buffer);
+        //     //         } else if (counter === 1) {
+        //     //             const req = streamingProto.BattleRequest.create({start: {}});
+        //     //             const buffer = streamingProto.BattleRequest.encode(req).finish();
+        //     //             ws2.send(buffer);
+        //     //         } else if (counter === 3) {
+        //     //             const req = streamingProto.BattleRequest.create({
+        //     //                 move: {
+        //     //                     battleId: battleObject.id,
+        //     //                     cellIdx: 4
+        //     //                 }
+        //     //             });
+        //     //             const buffer = streamingProto.BattleRequest.encode(req).finish();
+        //     //             ws1.send(buffer);
+        //     //         } else if (counter === 5) {
+        //     //             const req = streamingProto.BattleRequest.create({
+        //     //                 move: {
+        //     //                     battleId: battleObject.id,
+        //     //                     cellIdx: 1
+        //     //                 }
+        //     //             });
+        //     //             const buffer = streamingProto.BattleRequest.encode(req).finish();
+        //     //             ws2.send(buffer);
+        //     //         } else if (counter === 7) {
+        //     //             const req = streamingProto.BattleRequest.create({
+        //     //                 move: {
+        //     //                     battleId: battleObject.id,
+        //     //                     cellIdx: 0
+        //     //                 }
+        //     //             });
+        //     //             const buffer = streamingProto.BattleRequest.encode(req).finish();
+        //     //             ws1.send(buffer);
+        //     //         } else if (counter === 9) {
+        //     //             const req = streamingProto.BattleRequest.create({
+        //     //                 move: {
+        //     //                     battleId: battleObject.id,
+        //     //                     cellIdx: 2
+        //     //                 }
+        //     //             });
+        //     //             const buffer = streamingProto.BattleRequest.encode(req).finish();
+        //     //             ws2.send(buffer);
+        //     //         } else if (counter === 11) {
+        //     //             const req = streamingProto.BattleRequest.create({
+        //     //                 move: {
+        //     //                     battleId: battleObject.id,
+        //     //                     cellIdx: 8
+        //     //                 }
+        //     //             });
+        //     //             const buffer = streamingProto.BattleRequest.encode(req).finish();
+        //     //             ws1.send(buffer);
+        //     //         } else if (counter >= 13) {
+        //     //             resolve();
+        //     //         }
+        //     //         // console.log("-------------------------------------------------------------------------------------------------------------------------------");
+        //     //
+        //     //         counter++;
+        //     //     };
+        //
+        //     // await gameplay();
+        //
+        //
+        // }
+
+        // });
+    }
+
+    async wait(): Promise<void> {
+        await this.executed;
+    }
 }
+
 
 describe("Gateway Service", () => {
 
@@ -23,9 +111,6 @@ describe("Gateway Service", () => {
 
         const deviceId1 = new DeviceId(`device1-${Math.random().toString(36).substring(2, 8)}`);
         const deviceId2 = new DeviceId(`device2-${Math.random().toString(36).substring(2, 8)}`);
-
-        // console.log(deviceId1);
-        // console.log(deviceId2);
 
         const httpService = new HttpClient(
             httpClientConfig.host,
@@ -42,9 +127,6 @@ describe("Gateway Service", () => {
 
         const accessToken1 = authService1.accessToken;
         const accessToken2 = authService2.accessToken;
-
-        // console.log(accessToken1);
-        // console.log(accessToken2);
 
         if (!accessToken1 || !accessToken2) {
             throw new Error("Failed to authenticate test bots");
@@ -74,123 +156,34 @@ describe("Gateway Service", () => {
         const websocketService1 = new WebsocketClientService(websocketClient1);
         const websocketService2 = new WebsocketClientService(websocketClient2);
 
+
         await websocketService1.start();
         await websocketService2.start();
 
+        const startReq = streamingProto.BattleRequest.create({start: {}});
 
+
+        await websocketService1.send(startReq);
+        await websocketService2.send(startReq);
+
+        // await battleMoveUseCase.wait();
+
+//     ws2.on("message", (data: streamingProto.BattleResponse) => {
+//         // console.log("------------------------------------------------------------------------------=2=- Got engine update:");
+//         const buffer = new Uint8Array(data as ArrayBuffer);
+//         const res = streamingProto.BattleResponse.decode(buffer);
+//
+//         // console.log(res);
+//         const battleObject = battleProto.BattleObject.create(res.battle);
+//         gameplay(battleObject);
+//     });
 
         await websocketService1.stop();
         await websocketService2.stop();
 
-        // const start = new Promise<void>(async (resolve) => {
-        //     let counter = 0;
-        //     const gameplay = async (battleObject?: battleProto.BattleObject | null) => {
-        //         console.log(battleObject);
-        //
-        //         // console.log('=====================================================================step ', counter);
-        //         if (!battleObject) {
-        //             const req = streamingProto.BattleRequest.create({start: {}});
-        //             const buffer = streamingProto.BattleRequest.encode(req).finish();
-        //             ws1.send(buffer);
-        //         } else if (counter === 1) {
-        //             const req = streamingProto.BattleRequest.create({start: {}});
-        //             const buffer = streamingProto.BattleRequest.encode(req).finish();
-        //             ws2.send(buffer);
-        //         } else if (counter === 3) {
-        //             const req = streamingProto.BattleRequest.create({
-        //                 move: {
-        //                     battleId: battleObject.id,
-        //                     cellIdx: 4
-        //                 }
-        //             });
-        //             const buffer = streamingProto.BattleRequest.encode(req).finish();
-        //             ws1.send(buffer);
-        //         } else if (counter === 5) {
-        //             const req = streamingProto.BattleRequest.create({
-        //                 move: {
-        //                     battleId: battleObject.id,
-        //                     cellIdx: 1
-        //                 }
-        //             });
-        //             const buffer = streamingProto.BattleRequest.encode(req).finish();
-        //             ws2.send(buffer);
-        //         } else if (counter === 7) {
-        //             const req = streamingProto.BattleRequest.create({
-        //                 move: {
-        //                     battleId: battleObject.id,
-        //                     cellIdx: 0
-        //                 }
-        //             });
-        //             const buffer = streamingProto.BattleRequest.encode(req).finish();
-        //             ws1.send(buffer);
-        //         } else if (counter === 9) {
-        //             const req = streamingProto.BattleRequest.create({
-        //                 move: {
-        //                     battleId: battleObject.id,
-        //                     cellIdx: 2
-        //                 }
-        //             });
-        //             const buffer = streamingProto.BattleRequest.encode(req).finish();
-        //             ws2.send(buffer);
-        //         } else if (counter === 11) {
-        //             const req = streamingProto.BattleRequest.create({
-        //                 move: {
-        //                     battleId: battleObject.id,
-        //                     cellIdx: 8
-        //                 }
-        //             });
-        //             const buffer = streamingProto.BattleRequest.encode(req).finish();
-        //             ws1.send(buffer);
-        //         } else if (counter >= 13) {
-        //             resolve();
-        //         }
-        //         // console.log("-------------------------------------------------------------------------------------------------------------------------------");
-        //
-        //         counter++;
-        //     };
-        //
-        //
-        //     ws1.on("message", (data: streamingProto.BattleResponse) => {
-        //         // console.log("------------------------------------------------------------------------------=1=- Got engine update:");
-        //         const buffer = new Uint8Array(data as ArrayBuffer);
-        //         const res = streamingProto.BattleResponse.decode(buffer);
-        //
-        //         // console.log(res)
-        //         const battleObject = battleProto.BattleObject.create(res.battle);
-        //
-        //         gameplay(battleObject);
-        //     });
-        //
-        //     ws2.on("message", (data: streamingProto.BattleResponse) => {
-        //         // console.log("------------------------------------------------------------------------------=2=- Got engine update:");
-        //         const buffer = new Uint8Array(data as ArrayBuffer);
-        //         const res = streamingProto.BattleResponse.decode(buffer);
-        //
-        //         // console.log(res);
-        //         const battleObject = battleProto.BattleObject.create(res.battle);
-        //         gameplay(battleObject);
-        //     });
-        //
-        //     await Promise.all([
-        //         new Promise(resolve => ws1.on('open', resolve)),
-        //         new Promise(resolve => ws2.on('open', resolve)),
-        //     ]);
-        //
-        //     await gameplay();
-        // });
-        //
-        //
-        // await start;
-        //
-        // await ws1.close();
-        // await ws2.close();
-        //
-        //
-        // ///
-        // // console.log('streams are closed')
+        console.log('streams are closed')
 
 
-        // });
     }, 30000);
 
 });

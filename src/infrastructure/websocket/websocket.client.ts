@@ -85,7 +85,7 @@ class WebsocketClient {
         }
 
         try {
-            logger.log(message);
+            // logger.log(message);
             ws.send(streamingProto.BattleRequest.encode(message).finish());
         } catch (err) {
             logger.error("Failed to send BattleRequest", err);
@@ -94,7 +94,7 @@ class WebsocketClient {
     };
 
     cancelReconnect(reconnectAttempts = 0) {
-        logger.info("⏹️ Reconnect cancelled");
+        // logger.info("⏹️ Reconnect cancelled");
 
         this.reconnectAttempts = reconnectAttempts;
         if (this.reconnectFn) {
