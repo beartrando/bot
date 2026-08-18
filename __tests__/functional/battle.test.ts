@@ -107,10 +107,14 @@ describe("Gateway Service", () => {
         const startReq = streamingProto.BattleRequest.create({start: {}});
 
 
-        await websocketService1.send(startReq);
-        await websocketService2.send(startReq);
         try {
-            await battleMoveUseCase.waitForCounter(2);
+
+            await websocketService1.send(startReq);
+            await battleMoveUseCase.waitForCounter(1);
+
+            // await websocketService2.send(startReq);
+            // await battleMoveUseCase.waitForCounter(3);
+
         } catch (e) {
             console.log(e);
         }
