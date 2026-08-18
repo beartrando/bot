@@ -17,14 +17,16 @@ import * as streamingProto from "../../src/contracts/proto/streaming";
 class BattleMoveUseCase {
     private counter = 0;
 
+    public websocketService1;
+    public websocketService2;
+
     private resolve!: () => void;
 
     private readonly executed = new Promise<void>((resolve) => {
-        this.resolve = resolve;
-    });
+        this.counter++;
+        const startReq = streamingProto.BattleRequest.create({start: {}});
 
-    async execute(message: streamingProto.BattleResponse): Promise<void> {
-        console.log(message);
+        await this.websocketService2.send(startReq);
 
         // const gameplay = async (battleObject?: battleProto.BattleObject | null) => {
         //     console.log(battleObject);
@@ -97,6 +99,15 @@ class BattleMoveUseCase {
         // }
 
         // });
+
+
+        this.resolve = resolve;
+    });
+
+    async execute(message: streamingProto.BattleResponse): Promise<void> {
+        console.log(message);
+
+        this.resolve();
     }
 
     async wait(): Promise<void> {
@@ -112,21 +123,26 @@ describe("Gateway Service", () => {
         const deviceId1 = new DeviceId(`device1-${Math.random().toString(36).substring(2, 8)}`);
         const deviceId2 = new DeviceId(`device2-${Math.random().toString(36).substring(2, 8)}`);
 
+        // console.log(deviceId1);
+        // console.log(deviceId2);
+
         const httpService = new HttpClient(
             httpClientConfig.host,
             httpClientConfig.port,
         );
 
-        const deviceId = new DeviceId(domainBattleConfig.deviceId);
         const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
-        const authService1 = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
-        const authService2 = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
+        const authService1 = new AuthService(authConfig, anonimousSignInUseCase, deviceId1);
+        const authService2 = new AuthService(authConfig, anonimousSignInUseCase, deviceId2);
 
         await authService1.start();
         await authService2.start();
 
         const accessToken1 = authService1.accessToken;
         const accessToken2 = authService2.accessToken;
+
+        // console.log(accessToken1);
+        // console.log(accessToken2);
 
         if (!accessToken1 || !accessToken2) {
             throw new Error("Failed to authenticate test bots");
@@ -156,6 +172,11 @@ describe("Gateway Service", () => {
         const websocketService1 = new WebsocketClientService(websocketClient1);
         const websocketService2 = new WebsocketClientService(websocketClient2);
 
+        // console.log(await profileService1.fetchProfile());
+        // console.log(await profileService2.fetchProfile());
+
+        battleMoveUseCase.websocketService1 = websocketService1;
+        battleMoveUseCase.websocketService2 = websocketService2;
 
         await websocketService1.start();
         await websocketService2.start();
@@ -166,7 +187,7 @@ describe("Gateway Service", () => {
         await websocketService1.send(startReq);
         await websocketService2.send(startReq);
 
-        // await battleMoveUseCase.wait();
+        await battleMoveUseCase.wait();
 
 //     ws2.on("message", (data: streamingProto.BattleResponse) => {
 //         // console.log("------------------------------------------------------------------------------=2=- Got engine update:");
