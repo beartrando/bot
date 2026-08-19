@@ -15,7 +15,7 @@ export class BattleHandler implements WebsocketClientHandlerInterface {
         try {
             const buffer = new Uint8Array(data as ArrayBuffer);
             const message = streamingProto.BattleResponse.decode(buffer);
-            logger.log("📩 Got response:", message);
+            // logger.log("📩 Got response:", message);
             await this.battleMoveUseCaae.execute(message);
         } catch (err) {
             logger.error("❌ Failed to parse message:", err);
