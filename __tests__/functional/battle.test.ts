@@ -17,12 +17,12 @@ import * as battleProto from "../../src/contracts/proto/battle";
 class BattleMoveUseCase {
     private counter = 0;
 
-    private battle: battleProto.BattleObject|null = null;
+    private _battle: battleProto.BattleObject|null = null;
 
     async execute(message: streamingProto.BattleResponse): Promise<void> {
         console.log('Message received');
-        this.battle = message.battle;
-        if (!this.battle) {
+        this._battle = message.battle;
+        if (!this._battle) {
             throw new Error(`Battle is not received`);
         }
         // console.log(message);
@@ -31,11 +31,11 @@ class BattleMoveUseCase {
     }
 
     get battle(): battleProto.BattleObject {
-        if (!this.battle) {
+        if (!this._battle) {
             throw new Error(`Battle is not received`);
         }
 
-        return this.battle;
+        return this._battle;
     }
 
     async waitForCounter(
@@ -122,55 +122,50 @@ describe("Gateway Service", () => {
 
 
 
-        try {
-            const startReq = streamingProto.BattleRequest.create({start: {}});
+        const startReq = streamingProto.BattleRequest.create({start: {}});
 
-            await websocketService1.send(startReq);
-            await battleMoveUseCase.waitForCounter(1);
+        await websocketService1.send(startReq);
+        await battleMoveUseCase.waitForCounter(1);
 
-            assertEquals(battleMoveUseCase.battle.status, battleProto.BattleStatus.NEW);
+        assertEquals(battleMoveUseCase.battle.status, battleProto.BattleStatus.NEW);
 
 
-            await websocketService2.send(startReq);
-            await battleMoveUseCase.waitForCounter(3);
+        await websocketService2.send(startReq);
+        await battleMoveUseCase.waitForCounter(3);
 
-            assertEquals(battleMoveUseCase.battle.status, battleProto.BattleStatus.ACTIVE);
+        assertEquals(battleMoveUseCase.battle.status, battleProto.BattleStatus.ACTIVE);
 
-            const req = streamingProto.BattleRequest.create({
-                move: {
-                    battleId: battleMoveUseCase.battle.id,
-                    cellIdx: 4
-                }
-            });
+        const req = streamingProto.BattleRequest.create({
+            move: {
+                battleId: battleMoveUseCase.battle.id,
+                cellIdx: 4
+            }
+        });
 
-            await websocketService1.send(req);
-            await battleMoveUseCase.waitForCounter(5);
+        await websocketService1.send(req);
+        await battleMoveUseCase.waitForCounter(5);
 
-            req.move.cellIdx = 1;
+        req.move.cellIdx = 1;
 
-            await websocketService2.send(req);
-            await battleMoveUseCase.waitForCounter(7);
+        await websocketService2.send(req);
+        await battleMoveUseCase.waitForCounter(7);
 
-            req.move.cellIdx = 0;
+        req.move.cellIdx = 0;
 
-            await websocketService1.send(req);
-            await battleMoveUseCase.waitForCounter(9);
+        await websocketService1.send(req);
+        await battleMoveUseCase.waitForCounter(9);
 
-            req.move.cellIdx = 2;
+        req.move.cellIdx = 2;
 
-            await websocketService1.send(req);
-            await battleMoveUseCase.waitForCounter(11);
+        await websocketService1.send(req);
+        await battleMoveUseCase.waitForCounter(11);
 
-            req.move.cellIdx = 8;
+        req.move.cellIdx = 8;
 
-            await websocketService1.send(req);
-            await battleMoveUseCase.waitForCounter(13);
+        await websocketService1.send(req);
+        await battleMoveUseCase.waitForCounter(13);
 
-            assertEquals(battleMoveUseCase.battle.status, battleProto.BattleStatus.FINISHED);
-
-        } catch (e) {
-            console.log(e);
-        }
+        assertEquals(battleMoveUseCase.battle.status, battleProto.BattleStatus.FINISHED);
 
 
         await websocketService1.stop();
