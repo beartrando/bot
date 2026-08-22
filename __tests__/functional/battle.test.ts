@@ -168,6 +168,7 @@ describe("Gateway Service", () => {
 
         await websocketService1.send(req);
         await battleMoveUseCase.waitForCounter(15);
+        // await battleMoveUseCase.waitForCounter(16);
 
         console.log(battleMoveUseCase.battle);
 
