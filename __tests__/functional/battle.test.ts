@@ -171,11 +171,10 @@ describe("Gateway Service", () => {
 
         console.log(battleMoveUseCase.battle);
 
-        await battleMoveUseCase.waitForCounter(16);
-        // expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.FINISHED);
+        expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.FINISHED);
 
-        // await websocketService1.stop();
-        // await websocketService2.stop();
+        await websocketService1.stop();
+        await websocketService2.stop();
 
         console.log('streams are closed')
 
