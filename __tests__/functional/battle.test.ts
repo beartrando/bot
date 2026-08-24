@@ -34,7 +34,7 @@ class BattleMoveUseCase {
             throw new Error(`Battle is not received`);
         }
         // console.log(message);
-        console.log(message.battle?.board);
+        // console.log(message.battle?.board);
         this.counter++;
         // console.log(this.counter);
     }
@@ -131,29 +131,30 @@ describe("Gateway Service", () => {
 
 
         await websocketService2.send(startReq);
-        await battleMoveUseCase.waitForCounter(3);
-        await battleMoveUseCase.waitForCounter(5);
 
+        await battleMoveUseCase.waitForCounter(3);
         // console.log(battleMoveUseCase.battle);
 
-        // expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.ACTIVE);
-        //
-        // await battleMoveUseCase.waitForCounter(5);
-        // const req = streamingProto.BattleRequest.create({
-        //     move: {
-        //         battleId: battleMoveUseCase.battle.id,
-        //         cellIdx: 4
-        //     }
-        // });
-        //
-        // await websocketService1.send(req);
+        expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.ACTIVE);
+
+        await battleMoveUseCase.waitForCounter(5);
+        const req = streamingProto.BattleRequest.create({
+            move: {
+                battleId: battleMoveUseCase.battle.id,
+                cellIdx: 4
+            }
+        });
+
+        await websocketService1.send(req);
+
         // await battleMoveUseCase.waitForCounter(7);
+        // console.log('========================================================================================================')
         //
         // req.move!.cellIdx = 1;
         //
         // await websocketService2.send(req);
         // await battleMoveUseCase.waitForCounter(9);
-        //
+
         // req.move!.cellIdx = 0;
         //
         // await websocketService1.send(req);
@@ -172,7 +173,7 @@ describe("Gateway Service", () => {
         //
         // console.log(battleMoveUseCase.battle);
 
-        // await battleMoveUseCase.waitForCounter(4);
+        await battleMoveUseCase.waitForCounter(14);
         // expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.FINISHED);
 
         // await websocketService1.stop();
