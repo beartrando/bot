@@ -124,7 +124,12 @@ class WebsocketClient {
 
         // logger.log('reconnect!!');
 
-        this.disconnect();
+        try {
+            this.disconnect();
+        } catch (err) {
+            logger.error("Disconnect failed:", err);
+        }
+
         const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000);
         logger.info("Schedule reconnect in " + delay / 1000 + "s");
 
