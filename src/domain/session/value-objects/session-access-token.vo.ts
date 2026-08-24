@@ -1,13 +1,13 @@
-export class RefreshToken {
+export class SessionAccessToken {
     constructor(
         readonly value: string,
     ) {
         if (!value) {
-            throw new Error("RefreshToken cannot be empty");
+            throw new Error("SessionAccessToken cannot be empty");
         }
     }
 
-    equals(other: RefreshToken): boolean {
+    equals(other: SessionAccessToken): boolean {
         return this.value === other.value;
     }
 
@@ -16,4 +16,4 @@ export class RefreshToken {
     }
 }
 
-export default RefreshToken;
+export default SessionAccessToken;

@@ -27,7 +27,7 @@ import ProfileService from "../infrastructure/profile/service";
 import BattleHandler from "../infrastructure/websocket/handlers/battle.handler";
 import BattleMoveUseCase from "../application/use-cases/battle/battle-move";
 import AnonymousSignInUseCase from "../application/use-cases/auth/anonimous-sign-in";
-import DeviceId from "../domain/device/value-objects/device-id.vo";
+import DeviceDeviceId from "../domain/device/value-objects/device-device-id.vo";
 import domainBattleConfig from "../domain/device/config/config";
 import FetchProfileUseCase from "../application/use-cases/profile/fetch-profile";
 
@@ -40,7 +40,7 @@ function buildApplication() {
         httpClientConfig.port,
     );
 
-    const deviceId = new DeviceId(domainBattleConfig.deviceId);
+    const deviceId = new DeviceDeviceId(domainBattleConfig.deviceId);
     const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
     const authService = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
     const fetchProfileUseCase = new FetchProfileUseCase(httpService);

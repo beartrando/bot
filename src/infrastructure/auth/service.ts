@@ -1,15 +1,17 @@
 import jwt from "jsonwebtoken";
 
+import SessionAccessToken from "../../domain/session/value-objects/session-access-token.vo";
+
 import TokenService from "../../application/ports/token-service.port";
-import Id from "../../domain/common/value-objects/id.vo";
 import AuthConfig from "./interfaces/auth-config";
 import TokenPayload from "./interfaces/token-payload";
-import DeviceId from "../../domain/device/value-objects/device-id.vo";
+import UserId from "../../domain/user/value-objects/user-id.vo";
 import AnonymousSignInUseCase from "../../application/use-cases/auth/anonimous-sign-in";
-import AuthObject from "../../domain/auth/value-objects/auth-object.vo";
-import AccessToken from "../../domain/auth/value-objects/access-token.vo";
-import sleep from "../../utils/sleep";
+import DeviceDeviceId from "../../domain/device/value-objects/device-device-id.vo";
 import logger from "@shared/logger";
+import sleep from "../../utils/sleep";
+import AuthObject from "../../domain/auth/value-objects/auth-object.vo";
+
 
 export class AuthService implements TokenService {
     private authObject: AuthObject | null = null;
@@ -19,11 +21,11 @@ export class AuthService implements TokenService {
     constructor(
         private readonly config: AuthConfig,
         private readonly anonymousSignInUseCase: AnonymousSignInUseCase,
-        private readonly deviceId: DeviceId,
+        private readonly deviceId: DeviceDeviceId,
     ) {
     }
 
-    get accessToken(): AccessToken {
+    get accessToken(): SessionAccessToken {
         if (!this.authObject) {
             throw new Error("Not authenticated");
         }
@@ -82,7 +84,7 @@ export class AuthService implements TokenService {
         return !!this.authObject;
     }
 
-    getUserId(): Id {
+    getUserId(): UserId {
         if (!this.authObject) {
             throw new Error("Not authenticated");
         }
@@ -90,13 +92,13 @@ export class AuthService implements TokenService {
         return this.verifyAccessToken(this.authObject.accessToken);
     }
 
-    verifyAccessToken(accessToken: AccessToken): Id {
+    verifyAccessToken(accessToken: SessionAccessToken): UserId {
         const payload = this.payload(
             accessToken.value,
             this.config.accessSecret,
         );
 
-        return new Id(payload.sub);
+        return new UserId(payload.sub);
     }
 
     private async authenticate(): Promise<void> {

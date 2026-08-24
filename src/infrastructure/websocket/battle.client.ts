@@ -23,14 +23,14 @@
 //             const response = await gatewayClient.signIn(config.deviceId);
 //             logger.log(response);
 //             if (!response || (response as any).error || !response.auth) {
-//                 logger.error("❌ Auth failed:", response);
+//                 logger.error("❌ AuthObject failed:", response);
 //                 this.auth = null;
-//                 throw new Error("Auth failed");
+//                 throw new Error("AuthObject failed");
 //             }
 //             this.auth = response.auth as authProto.AuthObject;
 //             return this.auth;
 //         } catch (err) {
-//             logger.error("❌ Auth error:", err);
+//             logger.error("❌ AuthObject error:", err);
 //             this.auth = null;
 //             throw err; // ошибка всплывает, но процесс не падает
 //         }

@@ -1,13 +1,13 @@
-import DeviceId from "./value-objects/device-id.vo";
+import DeviceDeviceId from "./value-objects/device-device-id.vo";
 import Id from "../common/value-objects/id.vo";
 
 export type BattleEntityProps = {
-    id?: DeviceId;
+    id?: DeviceDeviceId;
 };
 
 export class DeviceEntity {
     constructor(
-        readonly id: DeviceId,
+        readonly id: DeviceDeviceId,
     ) {
     }
 

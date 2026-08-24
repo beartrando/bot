@@ -1,11 +1,11 @@
 import * as profileProto from "../../../contracts/proto/profile";
 import ProfileEntity from "../../../domain/profile/profile.entity";
-import Id from "../../../domain/common/value-objects/id.vo";
 import ProfileId from "../../../domain/profile/value-objects/profile-id.vo";
-import Nickname from "../../../domain/profile/value-objects/nickname.vo";
-import Level from "../../../domain/profile/value-objects/level.vo";
-import Rating from "../../../domain/profile/value-objects/rating.vo";
-import Experience from "../../../domain/profile/value-objects/experience.vo";
+import ProfileNickname from "../../../domain/profile/value-objects/profile-nickname.vo";
+import ProfileLevel from "../../../domain/profile/value-objects/profile-level.vo";
+import ProfileRating from "../../../domain/profile/value-objects/profile-rating.vo";
+import ProfileExperience from "../../../domain/profile/value-objects/profile-experience.vo";
+import UserId from "../../../domain/user/value-objects/user-id.vo";
 
 export class ProfileProtoMapper {
     static toProto(profile: ProfileEntity): profileProto.ProfileObject {
@@ -26,11 +26,11 @@ export class ProfileProtoMapper {
 
         return ProfileEntity.create({
             id: new ProfileId(profile.id),
-            userId: new Id(profile.userId),
-            nickname: new Nickname(profile.nickname),
-            level: new Level(profile.level),
-            rating: new Rating(profile.rating),
-            experience: new Experience(profile.experience),
+            userId: new UserId(profile.userId),
+            nickname: new ProfileNickname(profile.nickname),
+            level: new ProfileLevel(profile.level),
+            rating: new ProfileRating(profile.rating),
+            experience: new ProfileExperience(profile.experience),
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
         });

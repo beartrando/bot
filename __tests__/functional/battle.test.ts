@@ -1,4 +1,4 @@
-import DeviceId from "../../src/domain/device/value-objects/device-id.vo";
+import DeviceDeviceId from "../../src/domain/device/value-objects/device-device-id.vo";
 import httpClientConfig from "../../src/infrastructure/http/configs/http.client.config";
 import HttpClient from "../../src/infrastructure/http/client";
 import AnonymousSignInUseCase from "../../src/application/use-cases/auth/anonimous-sign-in";
@@ -63,8 +63,8 @@ describe("Gateway Service", () => {
 
     test("Game story functional", async () => {
 
-        const deviceId1 = new DeviceId(`device1-${Math.random().toString(36).substring(2, 8)}`);
-        const deviceId2 = new DeviceId(`device2-${Math.random().toString(36).substring(2, 8)}`);
+        const deviceId1 = new DeviceDeviceId(`device1-${Math.random().toString(36).substring(2, 8)}`);
+        const deviceId2 = new DeviceDeviceId(`device2-${Math.random().toString(36).substring(2, 8)}`);
 
         // console.log(deviceId1);
         // console.log(deviceId2);
@@ -173,11 +173,11 @@ describe("Gateway Service", () => {
         //
         // console.log(battleMoveUseCase.battle);
 
-        await websocketService1.stop();
         // await battleMoveUseCase.waitForCounter(4);
         // expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.FINISHED);
 
-        await websocketService2.stop();
+        // await websocketService1.stop();
+        // await websocketService2.stop();
 
         console.log('streams are closed')
 

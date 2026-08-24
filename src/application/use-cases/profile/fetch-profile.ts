@@ -1,7 +1,7 @@
 import HttpClient from "../../../infrastructure/http/client";
 import ProfileEntity from "../../../domain/profile/profile.entity";
 import bearerHeaders from "../../../infrastructure/auth/helpers/bearer-headers";
-import AccessToken from "../../../domain/auth/value-objects/access-token.vo";
+import SessionAccessToken from "../../../domain/session/value-objects/session-access-token.vo";
 import AuthService from "../../../infrastructure/auth/service";
 import logger from "@shared/logger";
 import ProfileProtoMapper from "../../../infrastructure/grpc/mappers/profile.proto.mapper";
@@ -12,7 +12,7 @@ export class FetchProfileUseCase {
     ) {
     }
 
-    async execute(accessToken: AccessToken): Promise<ProfileEntity | null> {
+    async execute(accessToken: SessionAccessToken): Promise<ProfileEntity | null> {
         const headers = bearerHeaders(accessToken);
         const resp = await this.httpClient.get("profile/getMe", {headers});
         return resp?.profile ? ProfileProtoMapper.toDomain(resp?.profile) : null;

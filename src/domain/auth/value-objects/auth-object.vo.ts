@@ -1,16 +1,11 @@
-import AccessToken from "./access-token.vo";
-import RefreshToken from "./refresh-token.vo";
+import SessionAccessToken from "../../session/value-objects/session-access-token.vo";
+import SessionRefreshToken from "../../session/value-objects/sesion-refresh-token.vo";
 
 export class AuthObject {
     constructor(
-        readonly accessToken: AccessToken,
-        readonly refreshToken: RefreshToken,
+        readonly accessToken: SessionAccessToken,
+        readonly refreshToken: SessionRefreshToken,
     ) {
-    }
-
-    equals(other: AuthObject): boolean {
-        return this.accessToken.equals(other.accessToken)
-            && this.refreshToken.equals(other.refreshToken);
     }
 }
 
