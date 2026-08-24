@@ -60,19 +60,6 @@ export class JobService {
         this.workers.set(topic, handler);
     }
 
-    private registerWorkers(): void {
-        for (const [topic, handler] of this.workers) {
-            pgBossManager.workers.registerWorker(
-                topic,
-                handler,
-            );
-        }
-
-        logger.info(
-            `✅ Registered ${this.workers.size} workers`,
-        );
-    }
-
     public async enqueue<T extends object>(
         topic: string,
         data: T,
@@ -92,13 +79,25 @@ export class JobService {
         return pgBossManager.queue.enqueueTx(topic, data, tx)
     }
 
-
     async stop() {
         return await pgBossManager.stop();
     }
 
     async check(): Promise<boolean> {
         return pgBossManager.check();
+    }
+
+    private registerWorkers(): void {
+        for (const [topic, handler] of this.workers) {
+            pgBossManager.workers.registerWorker(
+                topic,
+                handler,
+            );
+        }
+
+        logger.info(
+            `✅ Registered ${this.workers.size} workers`,
+        );
     }
 
 }

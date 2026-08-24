@@ -1,4 +1,3 @@
-import logger from "@shared/logger";
 import * as streamingProto from "../../../contracts/proto/streaming";
 import UseCaseInterface from "../interfaces/use-case.interface";
 

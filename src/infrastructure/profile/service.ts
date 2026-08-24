@@ -1,7 +1,6 @@
 import AuthService from "../auth/service";
 import FetchProfileUseCase from "../../application/use-cases/profile/fetch-profile";
 import ProfileEntity from "../../domain/profile/profile.entity";
-import logger from "@shared/logger";
 
 export class ProfileService {
     constructor(

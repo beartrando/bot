@@ -1,4 +1,3 @@
-import Id from "../common/value-objects/id.vo";
 import ProfileId from "../profile/value-objects/profile-id.vo";
 import ProfileNickname from "./value-objects/profile-nickname.vo";
 import ProfileLevel from "./value-objects/profile-level.vo";

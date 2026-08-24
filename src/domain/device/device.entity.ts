@@ -1,19 +1,18 @@
 import DeviceDeviceId from "./value-objects/device-device-id.vo";
-import Id from "../common/value-objects/id.vo";
 
 export type BattleEntityProps = {
-    id?: DeviceDeviceId;
+    deviceId?: DeviceDeviceId;
 };
 
 export class DeviceEntity {
     constructor(
-        readonly id: DeviceDeviceId,
+        readonly deviceId: DeviceDeviceId,
     ) {
     }
 
     static create(props: BattleEntityProps): DeviceEntity {
         return new DeviceEntity(
-            props.id ?? Id.create(),
+            props.deviceId ?? DeviceDeviceId.create(),
         );
     }
 }

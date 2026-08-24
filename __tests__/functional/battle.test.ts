@@ -17,19 +17,7 @@ import * as battleProto from "../../src/contracts/proto/battle";
 class BattleMoveUseCase {
     private counter = 0;
 
-    private _battle: battleProto.BattleObject|null = null;
-
-    async execute(message: streamingProto.BattleResponse): Promise<void> {
-        // console.log('Message received');
-        this._battle = message.battle?? null;
-        if (!this._battle) {
-            throw new Error(`Battle is not received`);
-        }
-        // console.log(message);
-        console.log(message.battle?.board);
-        this.counter++;
-        // console.log(this.counter);
-    }
+    private _battle: battleProto.BattleObject | null = null;
 
     get battle(): battleProto.BattleObject {
         if (!this._battle) {
@@ -37,6 +25,18 @@ class BattleMoveUseCase {
         }
 
         return this._battle;
+    }
+
+    async execute(message: streamingProto.BattleResponse): Promise<void> {
+        // console.log('Message received');
+        this._battle = message.battle ?? null;
+        if (!this._battle) {
+            throw new Error(`Battle is not received`);
+        }
+        // console.log(message);
+        console.log(message.battle?.board);
+        this.counter++;
+        // console.log(this.counter);
     }
 
     async waitForCounter(
@@ -120,7 +120,6 @@ describe("Gateway Service", () => {
 
         await websocketService1.start();
         await websocketService2.start();
-
 
 
         const startReq = streamingProto.BattleRequest.create({start: {}});
