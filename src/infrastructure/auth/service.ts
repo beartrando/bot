@@ -94,7 +94,7 @@ export class AuthService implements TokenService {
 
     verifyAccessToken(accessToken: SessionAccessToken): UserId {
         const payload = this.payload(
-            accessToken.value,
+            accessToken,
             this.config.accessSecret,
         );
 
