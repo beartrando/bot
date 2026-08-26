@@ -30,6 +30,8 @@ import AnonymousSignInUseCase from "../application/use-cases/auth/anonimous-sign
 import DeviceDeviceId from "../domain/device/value-objects/device-device-id.vo";
 import domainBattleConfig from "../domain/device/config/config";
 import FetchProfileUseCase from "../application/use-cases/profile/fetch-profile";
+import ConnectToBattleUseCase from "../application/use-cases/battle/connect-to-battle";
+import ConnectingBattleRequestConsumer from "../infrastructure/message/consumers/connecting-battle-request";
 
 
 function buildApplication() {
@@ -42,6 +44,7 @@ function buildApplication() {
 
     const deviceId = new DeviceDeviceId(domainBattleConfig.deviceId);
     const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
+
     const authService = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
     const fetchProfileUseCase = new FetchProfileUseCase(httpService);
     const profileService = new ProfileService(authService, fetchProfileUseCase);
@@ -67,9 +70,10 @@ function buildApplication() {
         battleHandler
     );
 
-    const websocketClientService = new WebsocketClientService(
-        websocketClient,
-    );
+    const websocketClientService = new WebsocketClientService(websocketClient);
+
+    const connectToBattleUseCase = new ConnectToBattleUseCase(jobService, jobConsumersConfig.websocketSendEvent);
+    const connectingBattleRequestConsumer = new ConnectingBattleRequestConsumer(connectToBattleUseCase);
 
     const sendToStreamConsumer = new SendToStreamConsumer(websocketClientService);
 
@@ -83,6 +87,11 @@ function buildApplication() {
         jobService,
         messageService,
         websocketClientService,
+    );
+
+    messageService.addConsumer(
+        messageConsumersConfig.botConnectingRequest,
+        connectingBattleRequestConsumer.execute.bind(connectingBattleRequestConsumer)
     );
 
     const statusUseCase = new StatusUseCase();

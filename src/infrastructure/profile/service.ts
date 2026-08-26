@@ -13,9 +13,9 @@ export class ProfileService {
     async fetchProfile(): Promise<ProfileEntity> {
         const profile = await this.fetchProfileUseCase.execute(this.authService.accessToken);
 
-        logger.log(this.authService.verifyAccessToken(this.authService.accessToken));
-        logger.log(this.authService.accessToken);
-        logger.log(profile);
+        // logger.log(this.authService.verifyAccessToken(this.authService.accessToken));
+        // logger.log(this.authService.accessToken);
+        // logger.log(profile);
         if (!profile) {
             throw new Error("Profile does not exists");
         }
