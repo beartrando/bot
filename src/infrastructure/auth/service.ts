@@ -111,7 +111,7 @@ export class AuthService implements TokenService {
         token: SessionAccessToken,
         secret: jwt.Secret,
     ): TokenPayload {
-        logger.log(token)
+        logger.log(this.authObject);
         const payload = jwt.verify(token.value, secret) as TokenPayload;
 
         if (!payload.sub) {
