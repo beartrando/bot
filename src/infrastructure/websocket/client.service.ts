@@ -12,7 +12,7 @@ export class WebsocketClientService {
     }
 
     async stop(): Promise<void> {
-        await this.websocketClient.disconnect(0);
+        await this.websocketClient.disconnect();
     }
 
     async getConnection(): Promise<WebSocket> {

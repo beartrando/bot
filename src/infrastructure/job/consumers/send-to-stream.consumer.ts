@@ -10,8 +10,7 @@ export class SendToStreamConsumer {
     }
 
     async execute(message: streamingProto.BattleRequest): Promise<void> {
-        logger.log('sendToStream');
-        console.log(message);
+        logger.log('sendToStream', message);
 
         try {
             await this.websocketClientService.send(message);

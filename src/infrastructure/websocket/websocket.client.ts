@@ -67,15 +67,22 @@ class WebsocketClient {
         });
     }
 
-    disconnect(reconnectAttempts = this.reconnectAttempts) {
-        if (this.ws) {
-            this.ws.close();
-            this.ws.removeAllListeners();
-            this.ws = null;
+    disconnect(): void {
+        if (!this.ws) {
+            return;
         }
-        this.cancelReconnect(reconnectAttempts);
-    }
 
+        if (this.ws.readyState === WebSocket.OPEN) {
+            this.ws.close();
+        } else if (this.ws.readyState === WebSocket.CONNECTING) {
+            this.ws.terminate();
+        }
+
+        this.ws.removeAllListeners();
+        this.ws = null;
+
+        this.cancelReconnect();
+    }
 
     send = async (message: streamingProto.BattleRequest): Promise<void> => {
         const ws = await this.getWs();
@@ -118,37 +125,33 @@ class WebsocketClient {
         this.scheduleReconnect();
     };
 
-    private scheduleReconnect() {
-        // logger.log('reconnect??');
-        if (this.reconnectFn) return; // защита от дублей
-
-        // logger.log('reconnect!!');
-
-        try {
-            this.disconnect();
-        } catch (err) {
-            logger.error("Disconnect failed:", err);
+    private scheduleReconnect(): void {
+        if (this.reconnectFn) {
+            return;
         }
 
-        const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000);
-        logger.info("Schedule reconnect in " + delay / 1000 + "s");
+        const delay = 1000;
+        // const delay = Math.min(1000 * 2 ** this.reconnectAttempts, 30000);
+
+        logger.info(`Schedule reconnect in ${delay / 1000}s`);
 
         this.reconnectAttempts++;
 
         this.reconnectFn = setTimeout(async () => {
-            logger.info(`🔄 Reconnecting... attempt ${this.reconnectAttempts}`);
+            this.reconnectFn = null;
+
+            logger.info(
+                `🔄 Reconnecting... attempt ${this.reconnectAttempts}`,
+            );
 
             try {
                 await this.connect();
             } catch (err) {
-                this.reconnectFn = null;
                 logger.error("Reconnect failed:", err);
-                this.scheduleReconnect();  // запускаем новый цикл
+                this.scheduleReconnect();
             }
-            this.reconnectFn = null;
         }, delay);
     }
-
 }
 
 
