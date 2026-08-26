@@ -108,10 +108,11 @@ export class AuthService implements TokenService {
     }
 
     private payload(
-        token: string,
+        token: SessionAccessToken,
         secret: jwt.Secret,
     ): TokenPayload {
-        const payload = jwt.verify(token, secret) as TokenPayload;
+        logger.log(token)
+        const payload = jwt.verify(token.value, secret) as TokenPayload;
 
         if (!payload.sub) {
             throw new Error("JWT payload missing sub");
