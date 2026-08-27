@@ -32,6 +32,7 @@ import domainBattleConfig from "../domain/device/config/config";
 import FetchProfileUseCase from "../application/use-cases/profile/fetch-profile";
 import ConnectToBattleUseCase from "../application/use-cases/battle/connect-to-battle";
 import ConnectingBattleRequestConsumer from "../infrastructure/message/consumers/connecting-battle-request";
+import RefreshTokensUseCase from "../application/use-cases/auth/refresh-tokens";
 
 
 function buildApplication() {
@@ -44,8 +45,9 @@ function buildApplication() {
 
     const deviceId = new DeviceDeviceId(domainBattleConfig.deviceId);
     const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
+    const refreshTokensUseCase = new RefreshTokensUseCase(httpService);
 
-    const authService = new AuthService(authConfig, anonimousSignInUseCase, deviceId);
+    const authService = new AuthService(authConfig, anonimousSignInUseCase, refreshTokensUseCase, deviceId);
     const fetchProfileUseCase = new FetchProfileUseCase(httpService);
     const profileService = new ProfileService(authService, fetchProfileUseCase);
 

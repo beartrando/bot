@@ -12,6 +12,7 @@ import authConfig from "../../src/infrastructure/auth/auth.config";
 import ProfileService from "../../src/infrastructure/profile/service";
 import * as streamingProto from "../../src/contracts/proto/streaming";
 import * as battleProto from "../../src/contracts/proto/battle";
+import RefreshTokensUseCase from "../../src/application/use-cases/auth/refresh-tokens";
 
 
 class BattleMoveUseCase {
@@ -75,8 +76,9 @@ describe("Gateway Service", () => {
         );
 
         const anonimousSignInUseCase = new AnonymousSignInUseCase(httpService);
-        const authService1 = new AuthService(authConfig, anonimousSignInUseCase, deviceId1);
-        const authService2 = new AuthService(authConfig, anonimousSignInUseCase, deviceId2);
+        const refreshTokensUseCase = new RefreshTokensUseCase(httpService);
+        const authService1 = new AuthService(authConfig, anonimousSignInUseCase, refreshTokensUseCase, deviceId1);
+        const authService2 = new AuthService(authConfig, anonimousSignInUseCase, refreshTokensUseCase, deviceId2);
 
         await authService1.start();
         await authService2.start();
@@ -135,7 +137,7 @@ describe("Gateway Service", () => {
         await battleMoveUseCase.waitForCounter(3);
         // console.log(battleMoveUseCase.battle);
 
-        expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.ACTIVE);
+        expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.READY);
 
         await battleMoveUseCase.waitForCounter(5);
         const req = streamingProto.BattleRequest.create({

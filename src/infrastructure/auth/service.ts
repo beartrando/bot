@@ -11,6 +11,7 @@ import DeviceDeviceId from "../../domain/device/value-objects/device-device-id.v
 import logger from "@shared/logger";
 import sleep from "../../utils/sleep";
 import AuthObject from "../../domain/auth/value-objects/auth-object.vo";
+import RefreshTokensUseCase from "../../application/use-cases/auth/refresh-tokens";
 
 
 export class AuthService implements TokenService {
@@ -21,6 +22,7 @@ export class AuthService implements TokenService {
     constructor(
         private readonly config: AuthConfig,
         private readonly anonymousSignInUseCase: AnonymousSignInUseCase,
+        private readonly refreshTokensUseCase: RefreshTokensUseCase,
         private readonly deviceId: DeviceDeviceId,
     ) {
     }
@@ -34,20 +36,33 @@ export class AuthService implements TokenService {
     }
 
     async ensureAuthenticated(): Promise<void> {
-        if (this.authObject) {
-            return;
-        }
-
         if (this.authenticationPromise) {
             return this.authenticationPromise;
         }
 
-        this.authenticationPromise = this.authenticate()
+        this.authenticationPromise = this.ensureAuthentication()
             .finally(() => {
                 this.authenticationPromise = null;
             });
 
         return this.authenticationPromise;
+    }
+
+    private async ensureAuthentication(): Promise<void> {
+        if (!this.authObject) {
+            await this.authenticate();
+            return;
+        }
+
+        try {
+            this.verifyAccessToken(this.accessToken);
+        } catch (error) {
+            if (!(error instanceof jwt.TokenExpiredError)) {
+                throw error;
+            }
+
+            await this.refreshTokens();
+        }
     }
 
     async start(): Promise<void> {
@@ -107,11 +122,27 @@ export class AuthService implements TokenService {
         );
     }
 
+    private async refreshTokens(): Promise<void> {
+        if (!this.authObject) {
+            throw new Error("Not authenticated");
+        }
+
+        try {
+            this.authObject = await this.refreshTokensUseCase.execute(
+                this.authObject.refreshToken,
+            );
+        } catch (err) {
+            logger.log(err);
+            this.authObject = null;
+
+            await this.authenticate();
+        }
+    }
+
     private payload(
         token: SessionAccessToken,
         secret: jwt.Secret,
     ): TokenPayload {
-        logger.log(this.authObject);
         const payload = jwt.verify(token.value, secret) as TokenPayload;
 
         if (!payload.sub) {

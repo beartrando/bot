@@ -35,12 +35,12 @@ export class Application {
             await this.grpcService.start();
             await this.websocketClientService.start();
             logger.info(
-                '🚀 Streaming service started',
+                '🚀 Bot service started',
             );
         } catch (err) {
             logger.error(
                 {err},
-                '💥 Failed to start Streaming',
+                '💥 Failed to start Bot service',
             );
             process.exit(1);
         }
