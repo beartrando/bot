@@ -1,9 +1,11 @@
 import AuthService from "../auth/service";
 import FetchProfileUseCase from "../../application/use-cases/profile/fetch-profile";
 import ProfileEntity from "../../domain/profile/profile.entity";
-import logger from "@shared/logger";
 
 export class ProfileService {
+
+    private profile: ProfileEntity | null = null;
+
     constructor(
         private readonly authService: AuthService,
         private readonly fetchProfileUseCase: FetchProfileUseCase
@@ -11,6 +13,9 @@ export class ProfileService {
     }
 
     async fetchProfile(): Promise<ProfileEntity> {
+        if (this.profile) {
+            return this.profile;
+        }
         await this.authService.ensureAuthenticated();
 
         const profile = await this.fetchProfileUseCase.execute(this.authService.accessToken);

@@ -13,14 +13,17 @@ import ProfileService from "../../src/infrastructure/profile/service";
 import * as streamingProto from "../../src/contracts/proto/streaming";
 import * as battleProto from "../../src/contracts/proto/battle";
 import RefreshTokensUseCase from "../../src/application/use-cases/auth/refresh-tokens";
+import BattleEntity from "../../src/domain/battle/battle.entity";
+import BattleMoveUseCaseInterface from "../../src/infrastructure/websocket/handlers/battle-move-use-case-interface";
+import BattleStatusEnum from "../../src/domain/battle/enums/battle-status.enum";
 
 
-class BattleMoveUseCase {
+class BattleMoveUseCase implements BattleMoveUseCaseInterface{
     private counter = 0;
 
-    private _battle: battleProto.BattleObject | null = null;
+    private _battle: BattleEntity | null = null;
 
-    get battle(): battleProto.BattleObject {
+    get battle(): BattleEntity {
         if (!this._battle) {
             throw new Error(`Battle is not received`);
         }
@@ -28,14 +31,11 @@ class BattleMoveUseCase {
         return this._battle;
     }
 
-    async execute(message: streamingProto.BattleResponse): Promise<void> {
+    async execute(battle: BattleEntity): Promise<void> {
         // console.log('Message received');
-        this._battle = message.battle ?? null;
-        if (!this._battle) {
-            throw new Error(`Battle is not received`);
-        }
+        this._battle = battle;
         // console.log(message);
-        console.log(message.battle?.board);
+        console.log(battle.board);
         this.counter++;
         // console.log(this.counter);
     }
@@ -129,7 +129,7 @@ describe("Gateway Service", () => {
         await websocketService1.send(startReq);
         await battleMoveUseCase.waitForCounter(1);
 
-        expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.NEW);
+        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.New);
 
 
         await websocketService2.send(startReq);
@@ -137,12 +137,12 @@ describe("Gateway Service", () => {
         await battleMoveUseCase.waitForCounter(3);
         // console.log(battleMoveUseCase.battle);
 
-        expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.READY);
+        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Ready);
 
         await battleMoveUseCase.waitForCounter(5);
         const req = streamingProto.BattleRequest.create({
             move: {
-                battleId: battleMoveUseCase.battle.id,
+                battleId: battleMoveUseCase.battle.id.value,
                 cellIdx: 4
             }
         });
@@ -173,7 +173,7 @@ describe("Gateway Service", () => {
 
         console.log(battleMoveUseCase.battle);
 
-        expect(battleMoveUseCase.battle.status).toBe(battleProto.BattleStatus.FINISHED);
+        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Finished);
 
         await websocketService1.stop();
         await websocketService2.stop();

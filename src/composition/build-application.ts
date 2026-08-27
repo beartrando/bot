@@ -62,7 +62,7 @@ function buildApplication() {
         messageConsumersConfig,
     );
 
-    const battleMoveUseCase = new BattleMoveUseCase();
+    const battleMoveUseCase = new BattleMoveUseCase(profileService, jobService, jobConsumersConfig.websocketSendEvent);
     const battleHandler = new BattleHandler(battleMoveUseCase);
 
     const websocketClient = new WebsocketClient(
