@@ -1,10 +1,11 @@
 import BattleEntity from "../battle.entity";
-import BattleId from "../../battle/value-objects/battle-id.vo";
+import ProfileId from "../../profile/value-objects/profile-id.vo";
+import BattleCellValueEnum from "../enums/battle-cell-value.enum";
 
 export class BattleTurnRule {
-    calculate(entity: BattleEntity): BattleId {
+    calculate(entity: BattleEntity): ProfileId {
         const moves = entity.board.cells.filter(
-            cell => cell !== "EMPTY",
+            cell => cell !== BattleCellValueEnum.EMPTY,
         ).length;
 
         const playerIds = entity.playerIds.value;

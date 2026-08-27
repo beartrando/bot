@@ -1,4 +1,4 @@
-export class battleCellIdx {
+export class BattleMoveCellIdx {
     constructor(public readonly value: number) {
         if (!Number.isInteger(value)) {
             throw new Error("Cell index must be an integer.");
@@ -9,9 +9,9 @@ export class battleCellIdx {
         }
     }
 
-    equals(other: battleCellIdx): boolean {
+    equals(other: BattleMoveCellIdx): boolean {
         return this.value === other.value;
     }
 }
 
-export default battleCellIdx;
+export default BattleMoveCellIdx;
