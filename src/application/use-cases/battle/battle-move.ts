@@ -18,26 +18,24 @@ export class BattleMoveUseCase implements BattleMoveUseCaseInterface {
     async execute(battle: battleEntity): Promise<void> {
 
         const battleDomain = BattleDomain.of(battle);
-        const profileId = await this.profileService.fetchProfile();
+        const profile = await this.profileService.fetchProfile();
 
-        if (!await battleDomain.isMyTurn(profileId)) {
+        if (!await battleDomain.isMyTurn(profile.id)) {
             return;
         }
 
         try {
-            const battleMove = battleDomain.resolveMove(profileId);
+            const battleMove = battleDomain.resolveMove(profile.id);
+            const req = streamingProto.BattleRequest.create({
+                move: BattleMoveProtoMapper.toProto(battleMove)
+            });
+
+            this.jobService.enqueue(this.websocketSendEventTopic, req);
+            logger.log('message moved to pgBoss')
+
         } catch (err) {
             logger.info(err)
         }
-
-
-        const req = streamingProto.BattleRequest.create({
-            move: BattleMoveProtoMapper.toProto(battleMove)
-        });
-
-        this.jobService.enqueue(this.websocketSendEventTopic, req);
-        logger.log('message moved to pgBoss')
-
     }
 
 }

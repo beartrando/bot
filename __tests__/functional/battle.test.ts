@@ -35,7 +35,7 @@ class BattleMoveUseCase implements BattleMoveUseCaseInterface{
         // console.log('Message received');
         this._battle = battle;
         // console.log(message);
-        console.log(battle.board);
+        console.log(battle);
         this.counter++;
         // console.log(this.counter);
     }

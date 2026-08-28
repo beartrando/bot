@@ -5,6 +5,7 @@ import BattleStatusProtoMapper from "./battle/battle-status.proto.mapper";
 import BattleId from "../../../domain/battle/value-objects/battle-id.vo";
 import BattlePlayerIds from "../../../domain/battle/value-objects/battle-player-ids.vo";
 import ProfileId from "../../../domain/profile/value-objects/profile-id.vo";
+import logger from "@shared/logger";
 
 export class BattleProtoMapper {
     static toProto(battle: BattleEntity): battleProto.BattleObject {
