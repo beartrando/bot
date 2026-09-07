@@ -129,7 +129,7 @@ describe("Gateway Service", () => {
         await websocketService1.send(startReq);
         await battleMoveUseCase.waitForCounter(1);
 
-        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.New);
+        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Created);
 
 
         await websocketService2.send(startReq);

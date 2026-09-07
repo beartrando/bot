@@ -36,7 +36,7 @@ export class BattleEntity {
             props.id,
             props.playerIds,
             props.board ?? BattleBoard.empty(),
-            props.status ?? new BattleStatus(BattleStatusEnum.New),
+            props.status ?? new BattleStatus(BattleStatusEnum.Created),
             props.winnerId ?? null,
             props.lastMoveAt ?? null,
         );
