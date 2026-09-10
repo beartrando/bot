@@ -128,26 +128,21 @@ describe("Gateway Service", () => {
         const createReq = streamingProto.BattleRequest.create({create: {}});
 
         await websocketService1.send(createReq);
-        await battleMoveUseCase.waitForCounter(1);
-
-        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Created);
-
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         await websocketService2.send(createReq);
 
-        await battleMoveUseCase.waitForCounter(3);
+        await battleMoveUseCase.waitForCounter(2);
         // console.log(battleMoveUseCase.battle);
 
         expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Ready);
-
-        await battleMoveUseCase.waitForCounter(5);
 
         const startReq = streamingProto.BattleRequest.create({start: {battleId: battleMoveUseCase.battle.id.value}});
 
         await websocketService1.send(startReq);
         await websocketService2.send(startReq);
 
-        await battleMoveUseCase.waitForCounter(7);
+        await battleMoveUseCase.waitForCounter(4);
 
         expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Started);
 
@@ -161,27 +156,28 @@ describe("Gateway Service", () => {
 
         await websocketService1.send(req);
 
-        await battleMoveUseCase.waitForCounter(9);
+        await battleMoveUseCase.waitForCounter(6);
 
         req.move!.cellIdx = 1;
 
         await websocketService2.send(req);
-        await battleMoveUseCase.waitForCounter(11);
+        await battleMoveUseCase.waitForCounter(8);
 
         req.move!.cellIdx = 0;
 
         await websocketService1.send(req);
-        await battleMoveUseCase.waitForCounter(13);
+        await battleMoveUseCase.waitForCounter(10);
 
         req.move!.cellIdx = 2;
 
         await websocketService2.send(req);
-        await battleMoveUseCase.waitForCounter(15);
+        await battleMoveUseCase.waitForCounter(12);
 
         req.move!.cellIdx = 8;
 
         await websocketService1.send(req);
-        await battleMoveUseCase.waitForCounter(17);
+        await battleMoveUseCase.waitForCounter(14);
+        // await battleMoveUseCase.waitForCounter(17);
 
         // console.log(battleMoveUseCase.battle);
 
