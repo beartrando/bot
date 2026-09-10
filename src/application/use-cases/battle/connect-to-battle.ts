@@ -10,7 +10,7 @@ export class ConnectToBattleUseCase {
     }
 
     async execute(battleId: BattleId): Promise<void> {
-        const request = streamingProto.BattleRequest.create({start: {battleId: battleId.value}});
+        const request = streamingProto.BattleRequest.create({create: {battleId: battleId.value}});
         this.jobService.enqueue(this.websocketSendEventTopic, request);
     }
 }

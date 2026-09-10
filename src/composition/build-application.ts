@@ -25,7 +25,7 @@ import httpClientConfig from "../infrastructure/http/configs/http.client.config"
 import WebsocketClient from "../infrastructure/websocket/websocket.client";
 import ProfileService from "../infrastructure/profile/service";
 import BattleHandler from "../infrastructure/websocket/handlers/battle.handler";
-import BattleMoveUseCase from "../application/use-cases/battle/battle-move";
+import BattleUpdatedUseCase from "../application/use-cases/battle/battle-updated";
 import AnonymousSignInUseCase from "../application/use-cases/auth/anonimous-sign-in";
 import DeviceDeviceId from "../domain/device/value-objects/device-device-id.vo";
 import domainBattleConfig from "../domain/device/config/config";
@@ -62,7 +62,7 @@ function buildApplication() {
         messageConsumersConfig,
     );
 
-    const battleMoveUseCase = new BattleMoveUseCase(profileService, jobService, jobConsumersConfig.websocketSendEvent);
+    const battleMoveUseCase = new BattleUpdatedUseCase(profileService, jobService, jobConsumersConfig.websocketSendEvent);
     const battleHandler = new BattleHandler(battleMoveUseCase);
 
     const websocketClient = new WebsocketClient(

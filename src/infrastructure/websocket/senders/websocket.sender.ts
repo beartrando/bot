@@ -2,8 +2,8 @@
 // import * as streamingProto from "../../../contracts/proto/streaming";
 // import WebsocketHandlerInterface from "../interfaces/websocket-handler.interface";
 //
-// import BattleStartUseCase from "../../../application/use-cases/battle/battle-start";
-// import BattleMoveUseCase from "../../../application/use-cases/battle/battle-move";
+// import BattleCreateUseCase from "../../../application/use-cases/battle/battle-start";
+// import BattleUpdatedUseCase from "../../../application/use-cases/battle/battle-move";
 // import BattleLeaveUseCase from "../../../application/use-cases/battle/battle-leave";
 // import BattleConnectBotUseCase from "../../../application/use-cases/battle/battle-connect-bot";
 // import BattlePingUseCase from "../../../application/use-cases/battle/battle-ping";
@@ -11,8 +11,8 @@
 //
 // export class BattleHandler implements WebsocketHandlerInterface {
 //     constructor(
-//         private readonly start: BattleStartUseCase,
-//         private readonly move: BattleMoveUseCase,
+//         private readonly start: BattleCreateUseCase,
+//         private readonly move: BattleUpdatedUseCase,
 //         private readonly ping: BattlePingUseCase,
 //         private readonly connectBot: BattleConnectBotUseCase,
 //         private readonly leave: BattleLeaveUseCase,
