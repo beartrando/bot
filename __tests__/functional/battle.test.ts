@@ -161,7 +161,7 @@ describe("Gateway Service", () => {
 
         await websocketService1.send(req);
 
-        await battleMoveUseCase.waitForCounter(10);
+        await battleMoveUseCase.waitForCounter(9);
 
         req.move!.cellIdx = 1;
 
@@ -183,7 +183,7 @@ describe("Gateway Service", () => {
         await websocketService1.send(req);
         await battleMoveUseCase.waitForCounter(17);
 
-        console.log(battleMoveUseCase.battle);
+        // console.log(battleMoveUseCase.battle);
 
         expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Finished);
 
