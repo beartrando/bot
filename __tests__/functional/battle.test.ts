@@ -35,8 +35,9 @@ class BattleMoveUseCase implements BattleUpdtedUseCaseInterface{
         // console.log('Message received');
         this._battle = battle;
         // console.log(message);
-        console.log(battle);
         this.counter++;
+        console.log(battle);
+        console.log(this.counter);
         // console.log(this.counter);
     }
 
@@ -150,41 +151,41 @@ describe("Gateway Service", () => {
 
         expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Started);
 
-        //
-        // const req = streamingProto.BattleRequest.create({
-        //     move: {
-        //         battleId: battleMoveUseCase.battle.id.value,
-        //         cellIdx: 4
-        //     }
-        // });
-        //
-        // await websocketService1.send(req);
-        //
-        // await battleMoveUseCase.waitForCounter(9);
-        //
-        // req.move!.cellIdx = 1;
-        //
-        // await websocketService2.send(req);
-        // await battleMoveUseCase.waitForCounter(11);
-        //
-        // req.move!.cellIdx = 0;
-        //
-        // await websocketService1.send(req);
-        // await battleMoveUseCase.waitForCounter(13);
-        //
-        // req.move!.cellIdx = 2;
-        //
-        // await websocketService2.send(req);
-        // await battleMoveUseCase.waitForCounter(15);
-        //
-        // req.move!.cellIdx = 8;
-        //
-        // await websocketService1.send(req);
-        // await battleMoveUseCase.waitForCounter(17);
-        //
-        // console.log(battleMoveUseCase.battle);
-        //
-        // expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Finished);
+
+        const req = streamingProto.BattleRequest.create({
+            move: {
+                battleId: battleMoveUseCase.battle.id.value,
+                cellIdx: 4
+            }
+        });
+
+        await websocketService1.send(req);
+
+        await battleMoveUseCase.waitForCounter(10);
+
+        req.move!.cellIdx = 1;
+
+        await websocketService2.send(req);
+        await battleMoveUseCase.waitForCounter(11);
+
+        req.move!.cellIdx = 0;
+
+        await websocketService1.send(req);
+        await battleMoveUseCase.waitForCounter(13);
+
+        req.move!.cellIdx = 2;
+
+        await websocketService2.send(req);
+        await battleMoveUseCase.waitForCounter(15);
+
+        req.move!.cellIdx = 8;
+
+        await websocketService1.send(req);
+        await battleMoveUseCase.waitForCounter(17);
+
+        console.log(battleMoveUseCase.battle);
+
+        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Finished);
 
         await websocketService1.stop();
         await websocketService2.stop();
