@@ -130,22 +130,22 @@ describe("Gateway Service", () => {
         await websocketService2.start();
 
 
-        const createReq = streamingProto.BattleRequest.create({create: {}});
+        const initReq = streamingProto.BattleRequest.create({init: {}});
 
-        await websocketService1.send(createReq);
+        await websocketService1.send(initReq);
         await battleMoveUseCase.waitForCounter(1);
 
         if (battleMoveUseCase.battle.status.equals(BattleStatus.create(BattleStatusEnum.Matched))) {
             battleMoveUseCase.resetCounter();
             await websocketService1.stop();
             await websocketService1.start();
-            await websocketService1.send(createReq);
+            await websocketService1.send(initReq);
             await battleMoveUseCase.waitForCounter(1);
         }
 
         expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Created);
 
-        await websocketService2.send(createReq);
+        await websocketService2.send(initReq);
 
         await battleMoveUseCase.waitForCounter(2);
 
