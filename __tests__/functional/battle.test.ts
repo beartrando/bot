@@ -16,6 +16,7 @@ import RefreshTokensUseCase from "../../src/application/use-cases/auth/refresh-t
 import BattleEntity from "../../src/domain/battle/battle.entity";
 import BattleUpdtedUseCaseInterface from "../../src/infrastructure/websocket/handlers/battle-updted-use-case-interface";
 import BattleStatusEnum from "../../src/domain/battle/enums/battle-status.enum";
+import BattleStatus from "../../src/domain/battle/value-objects/battle-status.vo";
 
 
 class BattleMoveUseCase implements BattleUpdtedUseCaseInterface{
@@ -29,6 +30,10 @@ class BattleMoveUseCase implements BattleUpdtedUseCaseInterface{
         }
 
         return this._battle;
+    }
+
+    resetCounter(): void {
+        this.counter = 0;
     }
 
     async execute(battle: BattleEntity): Promise<void> {
@@ -128,12 +133,25 @@ describe("Gateway Service", () => {
         const createReq = streamingProto.BattleRequest.create({create: {}});
 
         await websocketService1.send(createReq);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await battleMoveUseCase.waitForCounter(1);
+
+        if (battleMoveUseCase.battle.status.equals(BattleStatus.create(BattleStatusEnum.Matched))) {
+            battleMoveUseCase.resetCounter();
+            await websocketService1.stop();
+            await websocketService1.start();
+            await websocketService1.send(createReq);
+            await battleMoveUseCase.waitForCounter(1);
+        }
+
+        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Created);
 
         await websocketService2.send(createReq);
 
         await battleMoveUseCase.waitForCounter(2);
-        // console.log(battleMoveUseCase.battle);
+
+        expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Matched);
+
+        await battleMoveUseCase.waitForCounter(5);
 
         expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Ready);
 
@@ -142,7 +160,7 @@ describe("Gateway Service", () => {
         await websocketService1.send(startReq);
         await websocketService2.send(startReq);
 
-        await battleMoveUseCase.waitForCounter(4);
+        await battleMoveUseCase.waitForCounter(7);
 
         expect(battleMoveUseCase.battle.status.value).toBe(BattleStatusEnum.Started);
 
@@ -156,28 +174,27 @@ describe("Gateway Service", () => {
 
         await websocketService1.send(req);
 
-        await battleMoveUseCase.waitForCounter(6);
+        await battleMoveUseCase.waitForCounter(9);
 
         req.move!.cellIdx = 1;
 
         await websocketService2.send(req);
-        await battleMoveUseCase.waitForCounter(8);
+        await battleMoveUseCase.waitForCounter(11);
 
         req.move!.cellIdx = 0;
 
         await websocketService1.send(req);
-        await battleMoveUseCase.waitForCounter(10);
+        await battleMoveUseCase.waitForCounter(13);
 
         req.move!.cellIdx = 2;
 
         await websocketService2.send(req);
-        await battleMoveUseCase.waitForCounter(12);
+        await battleMoveUseCase.waitForCounter(15);
 
         req.move!.cellIdx = 8;
 
         await websocketService1.send(req);
-        await battleMoveUseCase.waitForCounter(14);
-        // await battleMoveUseCase.waitForCounter(17);
+        await battleMoveUseCase.waitForCounter(17);
 
         // console.log(battleMoveUseCase.battle);
 

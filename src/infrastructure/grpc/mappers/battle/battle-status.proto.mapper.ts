@@ -10,6 +10,8 @@ export class BattleStatusProtoMapper {
         switch (status.value) {
             case BattleStatusEnum.Created:
                 return battleProto.BattleStatus.CREATED;
+            case BattleStatusEnum.Matched:
+                return battleProto.BattleStatus.MATCHED;
             case BattleStatusEnum.Ready:
                 return battleProto.BattleStatus.READY;
             case BattleStatusEnum.Started:
@@ -29,6 +31,8 @@ export class BattleStatusProtoMapper {
         switch (status) {
             case battleProto.BattleStatus.CREATED:
                 return new BattleStatus(BattleStatusEnum.Created);
+            case battleProto.BattleStatus.MATCHED:
+                return new BattleStatus(BattleStatusEnum.Matched);
             case battleProto.BattleStatus.READY:
                 return new BattleStatus(BattleStatusEnum.Ready);
             case battleProto.BattleStatus.STARTED:
