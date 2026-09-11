@@ -25,7 +25,7 @@ export class BattleUpdatedUseCase implements BattleUpdtedUseCaseInterface {
             const req = streamingProto.BattleRequest.create({
                 start: {battleId: battle.id.value}
             });
-            logger.log('message moved to start')
+            // logger.log('message moved to start')
 
             this.jobService.enqueue(this.websocketSendEventTopic, req);
 
