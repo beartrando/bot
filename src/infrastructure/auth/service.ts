@@ -12,6 +12,7 @@ import logger from "@shared/logger";
 import sleep from "../../utils/sleep";
 import AuthObject from "../../domain/auth/value-objects/auth-object.vo";
 import RefreshTokensUseCase from "../../application/use-cases/auth/refresh-tokens";
+import {TokenExpiredError} from "@shared/errors";
 
 
 export class AuthService implements TokenService {
@@ -143,13 +144,21 @@ export class AuthService implements TokenService {
         token: SessionAccessToken,
         secret: jwt.Secret,
     ): TokenPayload {
-        const payload = jwt.verify(token.value, secret) as TokenPayload;
+        try {
+            const payload = jwt.verify(token.value, secret) as TokenPayload;
 
-        if (!payload.sub) {
-            throw new Error("JWT payload missing sub");
+            if (!payload.sub) {
+                throw new Error("JWT payload missing sub");
+            }
+
+            return payload;
+        } catch (e) {
+            if (e instanceof jwt.TokenExpiredError) {
+                throw new TokenExpiredError();
+            }
+
+            throw e;
         }
-
-        return payload;
     }
 }
 
