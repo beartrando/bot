@@ -1,7 +1,7 @@
 import HttpClient from "../../../infrastructure/http/client";
-import AuthObject from "../../../domain/auth/value-objects/auth-object.vo";
 import SessionAccessToken from "../../../domain/session/value-objects/session-access-token.vo";
 import SessionRefreshToken from "../../../domain/session/value-objects/sesion-refresh-token.vo";
+import SessionEntity from "../../../domain/session/session-entity";
 
 export class RefreshTokensUseCase {
     constructor(
@@ -9,7 +9,7 @@ export class RefreshTokensUseCase {
     ) {
     }
 
-    async execute(refreshToken: SessionRefreshToken): Promise<AuthObject> {
+    async execute(refreshToken: SessionRefreshToken): Promise<SessionEntity> {
 
 
         // logger.info('signIn', deviceId);
@@ -20,7 +20,7 @@ export class RefreshTokensUseCase {
             throw new Error("Not authenticated");
         }
 
-        return new AuthObject(new SessionAccessToken(resp?.auth.accessToken), new SessionRefreshToken(resp?.auth.refreshToken));
+        return new SessionEntity(new SessionAccessToken(resp?.auth.accessToken), new SessionRefreshToken(resp?.auth.refreshToken));
     }
 }
 

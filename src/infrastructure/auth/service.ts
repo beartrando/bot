@@ -10,13 +10,13 @@ import AnonymousSignInUseCase from "../../application/use-cases/auth/anonimous-s
 import DeviceDeviceId from "../../domain/device/value-objects/device-device-id.vo";
 import logger from "@shared/logger";
 import sleep from "../../utils/sleep";
-import AuthObject from "../../domain/auth/value-objects/auth-object.vo";
+import SessionEntity from "../../domain/session/session-entity";
 import RefreshTokensUseCase from "../../application/use-cases/auth/refresh-tokens";
 import {TokenExpiredError} from "@shared/errors";
 
 
 export class AuthService implements TokenService {
-    private authObject: AuthObject | null = null;
+    private sessionEntity: SessionEntity | null = null;
     private authenticationPromise: Promise<void> | null = null;
     private stopping = false;
 
@@ -29,11 +29,11 @@ export class AuthService implements TokenService {
     }
 
     get accessToken(): SessionAccessToken {
-        if (!this.authObject) {
+        if (!this.sessionEntity) {
             throw new Error("Not authenticated");
         }
 
-        return this.authObject.accessToken;
+        return this.sessionEntity.accessToken;
     }
 
     async ensureAuthenticated(): Promise<void> {
@@ -50,7 +50,7 @@ export class AuthService implements TokenService {
     }
 
     private async ensureAuthentication(): Promise<void> {
-        if (!this.authObject) {
+        if (!this.sessionEntity) {
             await this.authenticate();
             return;
         }
@@ -93,19 +93,19 @@ export class AuthService implements TokenService {
 
     async stop(): Promise<void> {
         this.stopping = true;
-        this.authObject = null;
+        this.sessionEntity = null;
     }
 
     async check(): Promise<boolean> {
-        return !!this.authObject;
+        return !!this.sessionEntity;
     }
 
     getUserId(): UserId {
-        if (!this.authObject) {
+        if (!this.sessionEntity) {
             throw new Error("Not authenticated");
         }
 
-        return this.verifyAccessToken(this.authObject.accessToken);
+        return this.verifyAccessToken(this.sessionEntity.accessToken);
     }
 
     verifyAccessToken(accessToken: SessionAccessToken): UserId {
@@ -118,23 +118,23 @@ export class AuthService implements TokenService {
     }
 
     private async authenticate(): Promise<void> {
-        this.authObject = await this.anonymousSignInUseCase.execute(
+        this.sessionEntity = await this.anonymousSignInUseCase.execute(
             this.deviceId,
         );
     }
 
     private async refreshTokens(): Promise<void> {
-        if (!this.authObject) {
+        if (!this.sessionEntity) {
             throw new Error("Not authenticated");
         }
 
         try {
-            this.authObject = await this.refreshTokensUseCase.execute(
-                this.authObject.refreshToken,
+            this.sessionEntity = await this.refreshTokensUseCase.execute(
+                this.sessionEntity.refreshToken,
             );
         } catch (err) {
             logger.log(err);
-            this.authObject = null;
+            this.sessionEntity = null;
 
             await this.authenticate();
         }
