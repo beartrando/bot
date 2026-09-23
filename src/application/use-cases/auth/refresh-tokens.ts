@@ -16,11 +16,11 @@ export class RefreshTokensUseCase {
         const resp = await this.httpClient.post("auth/refreshTokens", {body: {token: refreshToken.value}});
         // logger.info('signIn', resp);
 
-        if (!resp?.auth) {
+        if (!resp?.session) {
             throw new Error("Not authenticated");
         }
 
-        return new SessionEntity(new SessionAccessToken(resp?.auth.accessToken), new SessionRefreshToken(resp?.auth.refreshToken));
+        return new SessionEntity(new SessionAccessToken(resp?.session.accessToken), new SessionRefreshToken(resp?.session.refreshToken));
     }
 }
 

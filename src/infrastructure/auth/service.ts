@@ -58,7 +58,7 @@ export class AuthService implements TokenService {
         try {
             this.verifyAccessToken(this.accessToken);
         } catch (error) {
-            if (!(error instanceof jwt.TokenExpiredError)) {
+            if (!(error instanceof TokenExpiredError)) {
                 throw error;
             }
 
