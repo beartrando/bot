@@ -40,6 +40,7 @@ class WebsocketClient {
     }
 
     async connect(): Promise<WebSocket> {
+        this.authService.ensureAuthenticated();
         const accessToken = this.authService.accessToken;
         const profileEntity = await this.profileService.fetchProfile();
         const profileId = profileEntity.id;
