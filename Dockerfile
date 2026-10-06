@@ -18,7 +18,6 @@ COPY services/bot/package*.json ./services/bot/
 COPY services/bot/jest.config.js ./services/bot/
 COPY services/bot/tsconfig.json ./services/bot/
 COPY services/bot/src ./services/bot/src/
-COPY services/bot/__tests__ ./services/bot/__tests__/
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
