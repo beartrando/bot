@@ -25,4 +25,3 @@ export class RefreshTokensUseCase {
 }
 
 export default RefreshTokensUseCase;
-

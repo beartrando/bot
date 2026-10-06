@@ -56,4 +56,3 @@ export class BattleUpdatedUseCase implements BattleUpdtedUseCaseInterface {
 }
 
 export default BattleUpdatedUseCase;
-

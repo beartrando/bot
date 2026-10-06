@@ -110,4 +110,3 @@ export class BattleNextMoveResolver {
 
 
 export default BattleNextMoveResolver;
-

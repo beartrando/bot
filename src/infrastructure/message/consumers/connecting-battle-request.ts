@@ -26,5 +26,3 @@ export class ConnectingBattleRequestConsumer implements UseCaseInterface<streami
 }
 
 export default ConnectingBattleRequestConsumer;
-
-

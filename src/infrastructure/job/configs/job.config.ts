@@ -5,4 +5,3 @@ export const jobConfig = {
 };
 
 export default jobConfig;
-

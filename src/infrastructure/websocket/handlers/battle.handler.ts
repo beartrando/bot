@@ -30,5 +30,3 @@ export class BattleHandler implements WebsocketClientHandlerInterface {
 }
 
 export default BattleHandler;
-
-

@@ -18,4 +18,3 @@ export class FetchProfileUseCase {
 }
 
 export default FetchProfileUseCase;
-

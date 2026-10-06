@@ -48,4 +48,3 @@ export class BattleStatusProtoMapper {
 }
 
 export default BattleStatusProtoMapper;
-

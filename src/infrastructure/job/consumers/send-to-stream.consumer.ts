@@ -27,4 +27,3 @@ export class SendToStreamConsumer {
 }
 
 export default SendToStreamConsumer;
-

@@ -209,4 +209,3 @@ describe("Gateway Service", () => {
     }, 300000);
 
 });
-
