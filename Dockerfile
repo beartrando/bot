@@ -39,6 +39,13 @@ RUN pnpm install --offline --frozen-lockfile --ignore-scripts
 RUN mkdir -p ./services/bot/src/contracts/proto
 RUN pnpm --filter bot proto:generate
 
+RUN pnpm --filter @shared/logger build
+RUN pnpm --filter @shared/grpc-client-manager build
+RUN pnpm --filter @shared/errors proto:generate
+RUN pnpm --filter @shared/errors build
+RUN pnpm --filter @shared/kafka-manager build
+RUN pnpm --filter @shared/pg-boss-manager build
+
 RUN pnpm --filter bot prisma:generate
 
 # ---------- DEV ----------
@@ -47,13 +54,6 @@ FROM deps AS dev
 COPY services/bot/tsconfig.test.json ./services/bot/
 
 ENV NODE_ENV=development
-
-RUN pnpm --filter @shared/logger build
-RUN pnpm --filter @shared/grpc-client-manager build
-RUN pnpm --filter @shared/errors proto:generate
-RUN pnpm --filter @shared/errors build
-RUN pnpm --filter @shared/kafka-manager build
-RUN pnpm --filter @shared/pg-boss-manager build
 
 RUN chown -R node:node /usr/src/app
 
