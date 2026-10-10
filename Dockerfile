@@ -17,6 +17,7 @@ COPY tsconfig.base.json ./
 COPY services/bot/package*.json ./services/bot/
 COPY services/bot/jest.config.js ./services/bot/
 COPY services/bot/tsconfig.json ./services/bot/
+COPY services/bot/jest.setup.ts ./services/bot/
 COPY services/bot/src ./services/bot/src/
 
 RUN apt-get update \
